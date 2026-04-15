@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmKit — Farm Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g900:#1a2e0e;--g800:#2d5016;--g700:#3d6b1e;--g600:#4e8726;--g500:#5a9e2f;
+  --g400:#7ab84a;--g300:#9fd06c;--g200:#c4e49e;--g100:#e4f3ce;--g50:#f4fbec;
+  --au500:#d4a017;--au400:#e8b84b;--au300:#f0ce7a;--au100:#faf0d0;--au600:#b8860b;
+  --cr50:#f9f6f0;--cr100:#f0e8d8;--cr300:#c8b89a;--cr500:#8b7355;--cr700:#5c4e3a;
+  --bg:#f2efe9;--surf:#ffffff;--surf2:#f8f5f0;--bdr:#e0dbd2;
+  --t1:#1a2210;--t2:#4a5740;--t3:#7a8a6a;
+  --sw:224px;--r:10px;--rl:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--t1);display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--g800);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.slogo{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
+.slogo .lt{font-family:'Noto Serif JP',serif;font-size:18px;font-weight:600;color:#fff;display:block;}
+.slogo .ls{font-size:11px;color:var(--g300);margin-top:2px;display:block;}
+.ssec{padding:14px 10px 6px;}
+.ssl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g400);padding:0 8px;margin-bottom:5px;}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--g200);font-size:13px;font-weight:400;transition:all .15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff;}
+.ni.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;}
+.ni svg{width:16px;height:16px;flex-shrink:0;opacity:.75;}
+.ni.active svg{opacity:1;}
+.sfooter{margin-top:auto;padding:14px 10px;border-top:1px solid rgba(255,255,255,.1);}
+.uinfo{display:flex;align-items:center;gap:9px;}
+.uav{width:30px;height:30px;border-radius:50%;background:var(--g600);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+.uname{font-size:13px;font-weight:600;color:#fff;}
+.urole{font-size:11px;color:var(--g300);}
+
+/* LANG SWITCH */
+.lang-switch{display:flex;gap:3px;padding:10px 10px 0;}
+.lang-btn{flex:1;padding:5px 4px;border:1px solid rgba(255,255,255,.2);border-radius:5px;background:none;color:var(--g300);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.lang-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+.lang-btn.active{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.4);}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 26px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:10;}
+.ptitle{font-size:15px;font-weight:700;color:var(--t1);}
+.tbr{display:flex;align-items:center;gap:10px;}
+.bdate{font-size:12px;color:var(--t2);background:var(--surf2);border:1px solid var(--bdr);padding:5px 12px;border-radius:20px;}
+.btn{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
+.btnp{background:var(--g800);color:#fff;}
+.btnp:hover{background:var(--g700);}
+.btns{background:var(--surf);color:var(--t1);border:1px solid var(--bdr);}
+.btns:hover{background:var(--surf2);}
+.btnsm{padding:5px 11px;font-size:12px;}
+
+/* PAGE */
+.pc{padding:22px 26px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:18px 20px;}
+.ctitle{font-size:13.5px;font-weight:700;color:var(--t1);margin-bottom:14px;}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.sc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:16px 18px;position:relative;overflow:hidden;}
+.slabel{font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
+.sval{font-size:26px;font-weight:800;color:var(--t1);line-height:1;margin-bottom:5px;}
+.schg{font-size:11.5px;color:var(--g600);font-weight:500;}
+.schg.dn{color:#c0392b;}
+.sico{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:18px;margin-bottom:18px;}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+
+/* TABLE */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:9px 13px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bdr);background:var(--surf2);}
+td{padding:11px 13px;border-bottom:1px solid var(--bdr);color:var(--t1);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surf2);}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.bg{background:var(--g100);color:var(--g800);}
+.bo{background:var(--au100);color:var(--au600);}
+.br{background:#fde8e8;color:#c0392b;}
+.bb{background:#e8f0fe;color:#1a56db;}
+.bgy{background:#efefef;color:#555;}
+.bpu{background:#f0e8fc;color:#6a1b9a;}
+
+/* AVATAR */
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.avname{display:flex;align-items:center;gap:9px;}
+
+/* PROGRESS */
+.pb{height:5px;border-radius:3px;background:var(--bdr);overflow:hidden;margin-top:5px;}
+.pf{height:100%;border-radius:3px;background:var(--g600);}
+
+/* FORM */
+.fg{margin-bottom:14px;}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--t2);margin-bottom:5px;}
+input,select,textarea{width:100%;padding:8px 11px;border:1px solid var(--bdr);border-radius:7px;font-size:13px;font-family:inherit;color:var(--t1);background:var(--surf);outline:none;transition:border .15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--g600);}
+
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;}
+.modal{background:#fff;border-radius:var(--rl);padding:26px;width:450px;max-width:95vw;max-height:88vh;overflow-y:auto;}
+.mtitle{font-size:17px;font-weight:800;margin-bottom:18px;color:var(--t1);}
+.mfooter{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+
+/* BAR CHART */
+.bchart{display:flex;align-items:flex-end;gap:7px;height:110px;padding-bottom:4px;}
+.bgroup{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
+.bar{width:100%;background:var(--g400);border-radius:4px 4px 0 0;}
+.blabel{font-size:10px;color:var(--t3);text-align:center;}
+.bval{font-size:10px;font-weight:700;color:var(--g800);}
+
+/* KANBAN */
+.kboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.kcol{background:var(--surf2);border-radius:var(--r);padding:13px;min-height:280px;}
+.kctitle{font-size:12.5px;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.kcard{background:#fff;border:1px solid var(--bdr);border-radius:8px;padding:11px;margin-bottom:7px;cursor:pointer;transition:box-shadow .15s;}
+.kcard:hover{box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.kctit{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:7px;}
+.kcmeta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--t3);}
+
+/* CALENDAR */
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cdh{text-align:center;font-size:10px;font-weight:700;color:var(--t3);padding:5px 0;}
+.cday{aspect-ratio:1;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11.5px;cursor:pointer;position:relative;}
+.cday:hover{background:var(--g50);}
+.cday.today{background:var(--g800);color:#fff;font-weight:800;}
+.cday.evt::after{content:'';width:4px;height:4px;border-radius:50%;background:var(--au500);position:absolute;bottom:2px;}
+.cday.empty{opacity:0;pointer-events:none;}
+
+/* CROP CARD */
+.cropcard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:9px;}
+.cropico{font-size:24px;flex-shrink:0;}
+.cropname{font-size:13.5px;font-weight:700;color:var(--t1);}
+.cropinfo{font-size:11px;color:var(--t3);margin-top:1px;}
+
+/* FINANCE */
+.frow{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--bdr);}
+.frow:last-child{border-bottom:none;}
+.fico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.famt{font-size:14px;font-weight:800;}
+.famt.inc{color:var(--g700);}
+.famt.exp{color:#c0392b;}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.stit{font-size:14px;font-weight:700;color:var(--t1);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--cr300);border-radius:3px;}
+
+/* WEATHER */
+.wcard{background:var(--g800);border-radius:var(--rl);padding:18px 20px;color:#fff;}
+.wtemp{font-size:34px;font-weight:800;line-height:1;}
+.wcity{font-size:12px;opacity:.7;margin-top:3px;}
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px;}
+.witem{font-size:11.5px;opacity:.85;}
+
+/* SUMMARY LINE */
+.sumline{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid var(--bdr);}
+.sumline:last-child{border-bottom:none;}
+
+/* LAHAN STATUS */
+.lcard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;}
+.lname{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--t1);}
+
+/* NOTIFICATION TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--g800);color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:960px){
+  .sgrid{grid-template-columns:repeat(2,1fr);}
+  .g2,.g3,.kboard{grid-template-columns:1fr;}
+  .g12,.g21{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar">
+  <div class="slogo">
+    <span class="lt">🌾 FarmKit</span>
+    <span class="ls" data-i18n="appSubtitle">Manajemen Pertanian</span>
+  </div>
+
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="id" onclick="setLang('id')">🇮🇩 ID</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">🇯🇵 日本語</button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navMain">Utama</div>
+    <button class="ni active" onclick="go('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span data-i18n="navDashboard">Dashboard</span>
+    </button>
+    <button class="ni" onclick="go('cuaca',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+      <span data-i18n="navWeather">Cuaca & Lahan</span>
+    </button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navHR">SDM</div>
+    <button class="ni" onclick="go('pekerja',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span data-i18n="navWorkers">Pekerja</span>
+    </button>
+    <button class="ni" onclick="go('absensi',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+      <span data-i18n="navAttendance">Absensi Harian</span>
+    </button>
+    <button class="ni" onclick="go('tugas',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span data-i18n="navTasks">Manajemen Tugas</span>
+    </button>
+    <button class="ni" onclick="go('gaji',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span data-i18n="navPayroll">Penggajian</span>
+    </button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navFarming">Pertanian</div>
+    <button class="ni" onclick="go('panen',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><path d="M8 12a4 4 0 0 0 8 0"/><path d="M12 2v4"/><path d="M12 6c0 0-4 2-4 6"/><path d="M12 6c0 0 4 2 4 6"/></svg>
+      <span data-i18n="navHarvest">Hasil Panen</span>
+    </button>
+    <button class="ni" onclick="go('kalender',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span data-i18n="navCalendar">Kalender Tanam</span>
+    </button>
+    <button class="ni" onclick="go('inventaris',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span data-i18n="navInventory">Inventaris</span>
+    </button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navFinanceSection">Keuangan</div>
+    <button class="ni" onclick="go('keuangan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span data-i18n="navFinance">Keuangan</span>
+    </button>
+    <button class="ni" onclick="go('laporan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span data-i18n="navReports">Laporan</span>
+    </button>
+  </div>
+
+  <div class="sfooter">
+    <div class="uinfo">
+      <div class="uav">SZ</div>
+      <div><div class="uname">Suzuki-san</div><div class="urole" data-i18n="userRole">Farm Owner</div></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <div class="topbar">
+    <div class="ptitle" id="ptitle">Dashboard</div>
+    <div class="tbr">
+      <span class="bdate" id="curDate"></span>
+      <button class="btn btnp btnsm" id="tbBtn" onclick="topBtn()" data-i18n="btnAddData">+ Tambah Data</button>
+    </div>
+  </div>
+
+  <div class="pc">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="sgrid">
+        <div class="sc"><div class="sico" style="background:#e8f5e9">👷</div><div class="slabel" data-i18n="statPresent">Hadir Hari Ini</div><div class="sval">12</div><div class="schg" data-i18n="statPresentChg">↑ dari 10 kemarin</div></div>
+        <div class="sc"><div class="sico" style="background:#fff8e1">🌾</div><div class="slabel" data-i18n="statHarvestWeek">Panen Minggu Ini</div><div class="sval">840<span style="font-size:14px;color:var(--t3);font-weight:400"> kg</span></div><div class="schg" data-i18n="statHarvestChg">↑ 12% dari minggu lalu</div></div>
+        <div class="sc"><div class="sico" style="background:#e3f2fd">📋</div><div class="slabel" data-i18n="statTaskPending">Tugas Pending</div><div class="sval">7</div><div class="schg dn" data-i18n="statTaskChg">3 mendekati deadline</div></div>
+        <div class="sc"><div class="sico" style="background:#e8f5e9">💴</div><div class="slabel" data-i18n="statRevenue">Pendapatan Bulan Ini</div><div class="sval" style="font-size:19px">¥480K</div><div class="schg" data-i18n="statRevenueChg">↑ 8% dari bulan lalu</div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ctitle" data-i18n="statHarvestChart">Hasil Panen 7 Hari Terakhir (kg)</div><div class="bchart" id="harvestChart"></div></div>
+        <div class="card"><div class="ctitle" data-i18n="statRecentAct">Aktivitas Terkini</div><div id="recentAct"></div></div>
+      </div>
+      <div class="g12">
+        <div>
+          <div class="wcard" style="margin-bottom:14px;">
+            <div style="font-size:11px;opacity:.7;margin-bottom:4px" data-i18n="weatherDashLabel">🌤️ Cuaca Hari Ini · Niigata, Jepang</div>
+            <div class="wtemp">22°C</div>
+            <div class="wcity" data-i18n="weatherDesc">Berawan Sebagian · Kelembaban 68%</div>
+            <div class="wgrid">
+              <div class="witem" data-i18n="weatherWind">💨 Angin: 12 km/h</div>
+              <div class="witem" data-i18n="weatherRain">🌧️ Hujan: 10%</div>
+              <div class="witem" data-i18n="weatherMin">🌡️ Min: 16°C</div>
+              <div class="witem" data-i18n="weatherUV">☀️ UV: Rendah</div>
+            </div>
+          </div>
+          <div class="card"><div class="ctitle" data-i18n="statNextHarvest">Jadwal Panen Berikutnya</div><div id="dashCrops"></div></div>
+        </div>
+        <div class="card"><div class="ctitle" data-i18n="statInventoryStatus">Status Inventaris</div><div id="dashInv"></div></div>
+      </div>
+    </div>
+
+    <!-- CUACA & LAHAN -->
+    <div class="page" id="page-cuaca">
+      <div class="g3">
+        <div class="card" style="text-align:center;"><div style="font-size:34px;margin-bottom:8px">☁️</div><div style="font-size:26px;font-weight:800">22°C</div><div style="font-size:12px;color:var(--t3);margin-top:3px" data-i18n="weatherTodayLabel">Hari ini · Berawan</div></div>
+        <div class="card" style="text-align:center;"><div style="font-size:34px;margin-bottom:8px">🌦️</div><div style="font-size:26px;font-weight:800">19°C</div><div style="font-size:12px;color:var(--t3);margin-top:3px" data-i18n="weatherTmrwLabel">Besok · Gerimis Ringan</div></div>
+        <div class="card" style="text-align:center;"><div style="font-size:34px;margin-bottom:8px">☀️</div><div style="font-size:26px;font-weight:800">25°C</div><div style="font-size:12px;color:var(--t3);margin-top:3px" data-i18n="weatherAfterLabel">Lusa · Cerah</div></div>
+      </div>
+      <div class="g3">
+        <div class="lcard">
+          <div class="lname" data-i18n="field1Name">🟩 Lahan A — Kubis & Wortel</div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldSoilTemp">Suhu Tanah</span><strong>18°C</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldHumidity">Kelembaban</span><strong>75%</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldPH">pH Tanah</span><strong>6.2</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldIrrigation">Irigasi</span><span class="badge bg" data-i18n="stActive">Aktif</span></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldStatus">Status</span><span class="badge bg" data-i18n="stOptimal">Optimal</span></div>
+        </div>
+        <div class="lcard">
+          <div class="lname" data-i18n="field2Name">🟨 Lahan B — Tomat</div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldSoilTemp">Suhu Tanah</span><strong>20°C</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldHumidity">Kelembaban</span><strong>60%</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldPH">pH Tanah</span><strong>6.8</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldIrrigation">Irigasi</span><span class="badge bo" data-i18n="stScheduled">Terjadwal</span></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldStatus">Status</span><span class="badge bo" data-i18n="stNeedsFertilizer">Perlu Pupuk</span></div>
+        </div>
+        <div class="lcard">
+          <div class="lname" data-i18n="field3Name">🟦 Lahan C — Padi</div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldSoilTemp">Suhu Tanah</span><strong>17°C</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldHumidity">Kelembaban</span><strong>82%</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldPH">pH Tanah</span><strong>5.8</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldIrrigation">Irigasi</span><span class="badge bg" data-i18n="stActive">Aktif</span></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldStatus">Status</span><span class="badge bg" data-i18n="stGood">Baik</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle" data-i18n="fieldRecTitle">Rekomendasi Tindakan Hari Ini</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;background:var(--au100);border-radius:8px;border-left:3px solid var(--au500)">
+            <span style="font-size:18px">⚠️</span>
+            <div><div style="font-size:13px;font-weight:700;color:var(--au600)" data-i18n="rec1Title">Pemupukan Lahan B Mendesak</div><div style="font-size:12px;color:var(--cr700);margin-top:2px" data-i18n="rec1Desc">Kelembaban tanah di bawah optimal, kadar nitrogen rendah. Rekomen pupuk NPK 15kg.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;background:var(--g50);border-radius:8px;border-left:3px solid var(--g600)">
+            <span style="font-size:18px">✅</span>
+            <div><div style="font-size:13px;font-weight:700;color:var(--g800)" data-i18n="rec2Title">Kondisi Lahan A & C Baik</div><div style="font-size:12px;color:var(--t2);margin-top:2px" data-i18n="rec2Desc">Tidak ada tindakan khusus. Lanjutkan irigasi rutin dan monitoring harian.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;background:#fde8e8;border-radius:8px;border-left:3px solid #e74c3c">
+            <span style="font-size:18px">🌧️</span>
+            <div><div style="font-size:13px;font-weight:700;color:#c0392b" data-i18n="rec3Title">Gerimis Besok — Tunda Pestisida</div><div style="font-size:12px;color:var(--cr700);margin-top:2px" data-i18n="rec3Desc">Penyemprotan pestisida sebaiknya ditunda hingga Rabu saat cuaca cerah kembali.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PEKERJA -->
+    <div class="page" id="page-pekerja">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="wrkTotal">Total Pekerja</div><div class="sval">14</div></div>
+        <div class="sc"><div class="slabel" data-i18n="wrkActive">Status Aktif</div><div class="sval" style="color:var(--g700)">12</div></div>
+        <div class="sc"><div class="slabel" data-i18n="wrkLeave">Cuti / Tidak Aktif</div><div class="sval" style="color:#e67e22">2</div></div>
+        <div class="sc"><div class="slabel" data-i18n="wrkMonthlySalary">Total Gaji/Bulan</div><div class="sval" style="font-size:18px">¥420K</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="wrkList">Daftar Pekerja</div><button class="btn btnp btnsm" onclick="sm('mWorker')" data-i18n="btnAddWorker">+ Tambah Pekerja</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thName">Nama</th><th data-i18n="thPosition">Posisi</th><th data-i18n="thPhone">No. HP</th>
+          <th data-i18n="thJoinDate">Bergabung</th><th data-i18n="thDailySalary">Gaji/Hari</th>
+          <th data-i18n="thStatus">Status</th><th data-i18n="thAction">Aksi</th>
+        </tr></thead><tbody id="tWorker"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ABSENSI -->
+    <div class="page" id="page-absensi">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="attPresent">Hadir</div><div class="sval" style="color:var(--g700)">12</div></div>
+        <div class="sc"><div class="slabel" data-i18n="attAbsent">Tidak Hadir</div><div class="sval" style="color:#c0392b">2</div></div>
+        <div class="sc"><div class="slabel" data-i18n="attSickOff">Izin / Sakit</div><div class="sval" style="color:#e67e22">1</div></div>
+        <div class="sc"><div class="slabel" data-i18n="attTotalHours">Total Jam Kerja</div><div class="sval" style="font-size:20px">86<span style="font-size:13px;color:var(--t3);font-weight:400"> <span data-i18n="hrs">jam</span></span></div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="attTitle">Absensi Hari Ini</div><button class="btn btnp btnsm" onclick="sm('mAbsen')" data-i18n="btnAddAttendance">+ Input Absensi</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thWorkerName">Nama Pekerja</th><th data-i18n="thCheckIn">Jam Masuk</th><th data-i18n="thCheckOut">Jam Keluar</th>
+          <th data-i18n="thTotalHours">Total Jam</th><th data-i18n="thStatus">Status</th><th data-i18n="thRemark">Keterangan</th>
+        </tr></thead><tbody id="tAbsen"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TUGAS -->
+    <div class="page" id="page-tugas">
+      <div style="display:flex;gap:9px;align-items:center;margin-bottom:14px">
+        <button class="btn btnp btnsm" onclick="sm('mTask')" data-i18n="btnAddTask">+ Buat Tugas</button>
+        <select id="filterWorker" style="width:auto;padding:5px 10px;font-size:12px" onchange="rTasks()">
+          <option value="" data-i18n="filterAllWorkers">Semua Pekerja</option>
+          <option>Andi Saputra</option><option>Budi Santoso</option><option>Citra Dewi</option>
+          <option>Dedi Prasetyo</option><option>Eka Putri</option>
+        </select>
+        <select id="filterPriority" style="width:auto;padding:5px 10px;font-size:12px" onchange="rTasks()">
+          <option value="" data-i18n="filterAllPriority">Semua Prioritas</option>
+          <option value="high" data-i18n="prHigh">Tinggi</option>
+          <option value="med" data-i18n="prMed">Sedang</option>
+          <option value="low" data-i18n="prLow">Rendah</option>
+        </select>
+      </div>
+      <div class="kboard">
+        <div class="kcol"><div class="kctitle"><span data-i18n="kanTodo">📋 Belum Dimulai</span> <span class="badge bgy" id="cntTodo">4</span></div><div id="ktodo"></div></div>
+        <div class="kcol"><div class="kctitle"><span data-i18n="kanDoing">⚡ Sedang Berjalan</span> <span class="badge bb" id="cntDoing">5</span></div><div id="kdoing"></div></div>
+        <div class="kcol"><div class="kctitle"><span data-i18n="kanDone">✅ Selesai</span> <span class="badge bg" id="cntDone">8</span></div><div id="kdone"></div></div>
+      </div>
+    </div>
+
+    <!-- GAJI -->
+    <div class="page" id="page-gaji">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="payTotal">Total Gaji Juni</div><div class="sval" style="font-size:19px">¥420K</div></div>
+        <div class="sc"><div class="slabel" data-i18n="payPaid">Sudah Dibayar</div><div class="sval" style="font-size:19px;color:var(--g700)">¥240K</div></div>
+        <div class="sc"><div class="slabel" data-i18n="payUnpaid">Belum Dibayar</div><div class="sval" style="font-size:19px;color:#c0392b">¥180K</div></div>
+        <div class="sc"><div class="slabel" data-i18n="payActive">Pekerja Aktif</div><div class="sval">14</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="payTitle">Rekap Gaji — Juni 2025</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btns btnsm" onclick="showToast(t('toastPDF'))" data-i18n="btnPrintPDF">Cetak PDF</button>
+            <button class="btn btnp btnsm" onclick="showToast(t('toastProcessed'))" data-i18n="btnProcessPayroll">Proses Gaji</button>
+          </div>
+        </div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thName">Nama</th><th data-i18n="thWorkDays">Hari Kerja</th><th data-i18n="thOvertime">Lembur (jam)</th>
+          <th data-i18n="thBaseSalary">Gaji Pokok</th><th data-i18n="thOvertimePay">Uang Lembur</th>
+          <th data-i18n="thTotal">Total</th><th data-i18n="thStatus">Status</th>
+        </tr></thead><tbody id="tGaji"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PANEN -->
+    <div class="page" id="page-panen">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="hvToday">Panen Hari Ini</div><div class="sval">142<span style="font-size:13px;font-weight:400;color:var(--t3)"> kg</span></div></div>
+        <div class="sc"><div class="slabel" data-i18n="hvWeek">Panen Minggu Ini</div><div class="sval">840<span style="font-size:13px;font-weight:400;color:var(--t3)"> kg</span></div></div>
+        <div class="sc"><div class="slabel" data-i18n="hvMonth">Panen Bulan Ini</div><div class="sval">3.2<span style="font-size:13px;font-weight:400;color:var(--t3)"> ton</span></div></div>
+        <div class="sc"><div class="slabel" data-i18n="hvValue">Nilai Panen</div><div class="sval" style="font-size:19px">¥186K</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="hvLog">Log Hasil Panen</div><button class="btn btnp btnsm" onclick="sm('mHarvest')" data-i18n="btnAddHarvest">+ Catat Panen</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thDate">Tanggal</th><th data-i18n="thCommodity">Komoditas</th><th data-i18n="thField">Lahan</th>
+          <th data-i18n="thWeight">Berat (kg)</th><th data-i18n="thQuality">Kualitas</th>
+          <th data-i18n="thDestination">Tujuan</th><th data-i18n="thValue">Nilai (¥)</th>
+        </tr></thead><tbody id="tHarvest"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- KALENDER TANAM -->
+    <div class="page" id="page-kalender">
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle" data-i18n="calTitle">Kalender Tanam — Juni 2025</div>
+          <div class="cg">
+            <div class="cdh" data-i18n="dayMin">Min</div><div class="cdh" data-i18n="daySen">Sen</div>
+            <div class="cdh" data-i18n="daySel">Sel</div><div class="cdh" data-i18n="dayRab">Rab</div>
+            <div class="cdh" data-i18n="dayKam">Kam</div><div class="cdh" data-i18n="dayJum">Jum</div>
+            <div class="cdh" data-i18n="daySab">Sab</div>
+          </div>
+          <div class="cg" id="calGrid" style="margin-top:3px"></div>
+          <div style="margin-top:14px;display:flex;gap:14px;font-size:11px;color:var(--t3)">
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:var(--g800)"></div><span data-i18n="calToday">Hari Ini</span></div>
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:var(--au500)"></div><span data-i18n="calScheduled">Ada Jadwal</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px"><div class="ctitle" data-i18n="calSchedule">Jadwal Tanam Aktif</div><div id="cropSched"></div></div>
+          <div class="card">
+            <div class="ctitle" data-i18n="calAdd">+ Tambah Jadwal Tanam</div>
+            <div class="fg"><label data-i18n="calCommodity">Komoditas</label>
+              <select><option data-i18n="cropRice">Padi</option><option data-i18n="cropTomato">Tomat</option><option data-i18n="cropCabbage">Kubis</option><option data-i18n="cropCarrot">Wortel</option><option data-i18n="cropOnion">Bawang</option><option data-i18n="cropSpinach">Bayam</option></select>
+            </div>
+            <div class="fg"><label data-i18n="calPlantDate">Tanggal Tanam</label><input type="date"></div>
+            <div class="fg"><label data-i18n="calHarvestEst">Estimasi Panen</label><input type="date"></div>
+            <div class="fg"><label data-i18n="calField">Lahan</label>
+              <select><option>Lahan A</option><option>Lahan B</option><option>Lahan C</option></select>
+            </div>
+            <button class="btn btnp" style="width:100%" onclick="showToast(t('toastSaved'))" data-i18n="btnSavePlanting">Simpan Jadwal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTARIS -->
+    <div class="page" id="page-inventaris">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="invTotal">Total Item</div><div class="sval">28</div></div>
+        <div class="sc"><div class="slabel" data-i18n="invSafe">Stok Aman</div><div class="sval" style="color:var(--g700)">21</div></div>
+        <div class="sc"><div class="slabel" data-i18n="invLow">Stok Rendah</div><div class="sval" style="color:#e67e22">5</div></div>
+        <div class="sc"><div class="slabel" data-i18n="invEmpty">Stok Habis</div><div class="sval" style="color:#c0392b">2</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="invList">Daftar Stok & Inventaris</div><button class="btn btnp btnsm" onclick="sm('mInv')" data-i18n="btnAddStock">+ Tambah Stok</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thItem">Item</th><th data-i18n="thCategory">Kategori</th><th data-i18n="thStock">Stok</th>
+          <th data-i18n="thUnit">Satuan</th><th data-i18n="thMinStock">Min. Stok</th>
+          <th data-i18n="thStatus">Status</th><th data-i18n="thLastUpdate">Update Terakhir</th>
+        </tr></thead><tbody id="tInv"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- KEUANGAN -->
+    <div class="page" id="page-keuangan">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="finRevenue">Pendapatan Bulan Ini</div><div class="sval" style="font-size:18px;color:var(--g700)">¥480K</div><div class="schg">↑ 8%</div></div>
+        <div class="sc"><div class="slabel" data-i18n="finExpense">Pengeluaran Bulan Ini</div><div class="sval" style="font-size:18px;color:#c0392b">¥312K</div><div class="schg dn">↑ 5%</div></div>
+        <div class="sc"><div class="slabel" data-i18n="finProfit">Keuntungan Bersih</div><div class="sval" style="font-size:18px;color:var(--g700)">¥168K</div><div class="schg">↑ 14%</div></div>
+        <div class="sc"><div class="slabel" data-i18n="finMargin">Margin Keuntungan</div><div class="sval">35%</div><div class="schg" data-i18n="finMarginChg">Bulan lalu: 30%</div></div>
+      </div>
+      <div class="g21">
+        <div class="card">
+          <div class="sh"><div class="stit" data-i18n="finTxTitle">Transaksi Terbaru</div><button class="btn btnp btnsm" onclick="sm('mFin')" data-i18n="btnAddTransaction">+ Tambah</button></div>
+          <div id="finList"></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px"><div class="ctitle" data-i18n="finExpBreak">Pengeluaran per Kategori</div><div id="expBreak"></div></div>
+          <div class="card">
+            <div class="ctitle" data-i18n="finSummary">Ringkasan Bulan Ini</div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finRice">Penjualan Padi</span><strong style="color:var(--g700)">+¥192K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finVeg">Penjualan Sayuran</span><strong style="color:var(--g700)">+¥288K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finWage">Gaji Pekerja</span><strong style="color:#c0392b">-¥168K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finFertilizer">Pupuk & Pestisida</span><strong style="color:#c0392b">-¥86K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finOther">Lain-lain</span><strong style="color:#c0392b">-¥58K</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAPORAN -->
+    <div class="page" id="page-laporan">
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle" data-i18n="rptTitle">Laporan Tersedia</div>
+          <div style="display:flex;flex-direction:column;gap:9px" id="reportList"></div>
+        </div>
+        <div class="card">
+          <div class="ctitle" data-i18n="rptPerfChart">Performa Keuangan 6 Bulan (¥K)</div>
+          <div id="perfChart"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pc -->
+</div><!-- /main -->
+
+<!-- ===== MODALS ===== -->
+<div class="moverlay" id="mWorker" style="display:none" onclick="hm('mWorker',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mWorkerTitle">👷 Tambah Pekerja Baru</div>
+    <div class="fg"><label data-i18n="fFullName">Nama Lengkap</label><input type="text" data-i18n-placeholder="phName"></div>
+    <div class="fg"><label data-i18n="fPosition">Posisi</label>
+      <select><option data-i18n="posGeneral">Petani Umum</option><option data-i18n="posSupervisor">Supervisor Lahan</option><option data-i18n="posMachine">Operator Mesin</option><option data-i18n="posWarehouse">Staf Gudang</option><option data-i18n="posDriver">Driver / Pengiriman</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fPhone">Nomor HP</label><input type="text" data-i18n-placeholder="phPhone"></div>
+    <div class="fg"><label data-i18n="fJoinDate">Tanggal Bergabung</label><input type="date"></div>
+    <div class="fg"><label data-i18n="fDailySalary">Gaji per Hari (¥)</label><input type="number" placeholder="0"></div>
+    <div class="fg"><label data-i18n="fStatusF">Status</label>
+      <select><option data-i18n="stActive">Aktif</option><option data-i18n="optTrial">Percobaan</option><option data-i18n="stLeave">Cuti</option></select>
+    </div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="hm('mWorker')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="hm('mWorker');showToast(t('toastSaved'))" data-i18n="btnSaveWorker">Simpan Pekerja</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mAbsen" style="display:none" onclick="hm('mAbsen',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mAbsenTitle">📅 Input Absensi</div>
+    <div class="fg"><label data-i18n="fWorker">Pilih Pekerja</label>
+      <select><option>Andi Saputra</option><option>Budi Santoso</option><option>Citra Dewi</option><option>Dedi Prasetyo</option><option>Eka Putri</option><option>Fajar Nugroho</option><option>Hendra Wijaya</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fDateF">Tanggal</label><input type="date"></div>
+    <div class="fg"><label data-i18n="fStatusAtt">Status</label>
+      <select><option data-i18n="stPresent">Hadir</option><option data-i18n="stAbsent">Tidak Hadir</option><option data-i18n="stPermission">Izin</option><option data-i18n="stSick">Sakit</option><option data-i18n="stOvertime">Lembur</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fCheckIn">Jam Masuk</label><input type="time" value="07:00"></div>
+    <div class="fg"><label data-i18n="fCheckOut">Jam Keluar</label><input type="time" value="16:00"></div>
+    <div class="fg"><label data-i18n="fRemarks">Keterangan</label><textarea rows="2" data-i18n-placeholder="phOptional"></textarea></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="hm('mAbsen')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="hm('mAbsen');showToast(t('toastSaved'))" data-i18n="btnSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mTask" style="display:none" onclick="hm('mTask',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mTaskTitle">📋 Buat Tugas Baru</div>
+    <div class="fg"><label data-i18n="fTaskTitle">Judul Tugas</label><input type="text" data-i18n-placeholder="phTaskTitle"></div>
+    <div class="fg"><label data-i18n="fDescription">Deskripsi</label><textarea rows="2" data-i18n-placeholder="phTaskDesc"></textarea></div>
+    <div class="fg"><label data-i18n="fAssignTo">Assign ke</label>
+      <select><option>Andi Saputra</option><option>Budi Santoso</option><option>Citra Dewi</option><option>Dedi Prasetyo</option><option data-i18n="optTeamAll">Tim A (semua)</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fPriority">Prioritas</label>
+      <select><option data-i18n="prLow">Rendah</option><option data-i18n="prMed">Sedang</option><option data-i18n="prHigh">Tinggi</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fDeadline">Deadline</label><input type="date"></div>
+    <div class="fg"><label data-i18n="fRelatedField">Lahan Terkait (opsional)</label>
+      <select><option>-</option><option>Lahan A</option><option>Lahan B</option><option>Lahan C</option></select>
+    </div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="hm('mTask')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="hm('mTask');showToast(t('toastSaved'))" data-i18n="btnCreateTask">Buat Tugas</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mHarvest" style="display:none" onclick="hm('mHarvest',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mHarvestTitle">🌾 Catat Hasil Panen</div>
+    <div class="fg"><label data-i18n="fHarvestDate">Tanggal Panen</label><input type="date"></div>
+    <div class="fg"><label data-i18n="fCommodity">Komoditas</label>
+      <select><option data-i18n="cropRice">Padi</option><option data-i18n="cropTomato">Tomat</option><option data-i18n="cropCabbage">Kubis</option><option data-i18n="cropCarrot">Wortel</option><option data-i18n="cropOnion">Bawang</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fField">Lahan</label>
+      <select><option>Lahan A</option><option>Lahan B</option><option>Lahan C</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fWeight">Berat Total (kg)</label><input type="number" placeholder="0"></div>
+    <div class="fg"><label data-i18n="fQuality">Kualitas / Grade</label>
+      <select><option data-i18n="gradeA">Grade A — Premium</option><option data-i18n="gradeB">Grade B — Standar</option><option data-i18n="gradeC">Grade C — Lokal</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fDestination">Tujuan Pengiriman</label>
+      <select><option data-i18n="destExport">Ekspor</option><option data-i18n="destLocal">Pasar Lokal</option><option data-i18n="destCoop">Koperasi</option><option data-i18n="destDirect">Dijual Langsung</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fPricePerKg">Harga Jual/kg (¥)</label><input type="number" placeholder="0"></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="hm('mHarvest')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="hm('mHarvest');showToast(t('toastSaved'))" data-i18n="btnSaveHarvest">Simpan Panen</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mInv" style="display:none" onclick="hm('mInv',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mInvTitle">📦 Tambah / Update Stok</div>
+    <div class="fg"><label data-i18n="fItemName">Nama Item</label><input type="text" data-i18n-placeholder="phItemName"></div>
+    <div class="fg"><label data-i18n="fCategory">Kategori</label>
+      <select><option data-i18n="catFertilizer">Pupuk</option><option data-i18n="catPesticide">Pestisida</option><option data-i18n="catTool">Alat & Mesin</option><option data-i18n="catSeed">Bibit</option><option data-i18n="catFuel">BBM</option><option data-i18n="catOther">Lainnya</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fStockQty">Jumlah Stok</label><input type="number" placeholder="0"></div>
+    <div class="fg"><label data-i18n="fUnit">Satuan</label><input type="text" data-i18n-placeholder="phUnit"></div>
+    <div class="fg"><label data-i18n="fMinStock">Stok Minimum</label><input type="number" placeholder="0"></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="hm('mInv')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="hm('mInv');showToast(t('toastSaved'))" data-i18n="btnSaveStock">Simpan Stok</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mFin" style="display:none" onclick="hm('mFin',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mFinTitle">💴 Tambah Transaksi</div>
+    <div class="fg"><label data-i18n="fTxType">Tipe Transaksi</label>
+      <select><option data-i18n="txIncome">Pemasukan</option><option data-i18n="txExpense">Pengeluaran</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fTxCategory">Kategori</label>
+      <select>
+        <option data-i18n="txCatHarvest">Penjualan Hasil Panen</option>
+        <option data-i18n="txCatWage">Gaji Pekerja</option>
+        <option data-i18n="txCatFertilizer">Pupuk & Pestisida</option>
+        <option data-i18n="txCatMachine">Perawatan Alat & Mesin</option>
+        <option data-i18n="txCatSeed">Pembelian Bibit</option>
+        <option data-i18n="txCatUtil">Listrik & Air</option>
+        <option data-i18n="txCatTransport">Transportasi</option>
+        <option data-i18n="catOther">Lainnya</option>
+      </select>
+    </div>
+    <div class="fg"><label data-i18n="fAmount">Jumlah (¥)</label><input type="number" placeholder="0"></div>
+    <div class="fg"><label data-i18n="fDateF">Tanggal</label><input type="date"></div>
+    <div class="fg"><label data-i18n="fTxDesc">Keterangan</label><textarea rows="2" data-i18n-placeholder="phTxDesc"></textarea></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="hm('mFin')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="hm('mFin');showToast(t('toastSaved'))" data-i18n="btnSaveTransaction">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== i18n ==========
+const i18n = {
+  id: {
+    appSubtitle:'Manajemen Pertanian',
+    navMain:'Utama', navHR:'SDM', navFarming:'Pertanian', navFinanceSection:'Keuangan',
+    navDashboard:'Dashboard', navWeather:'Cuaca & Lahan', navWorkers:'Pekerja',
+    navAttendance:'Absensi Harian', navTasks:'Manajemen Tugas', navPayroll:'Penggajian',
+    navHarvest:'Hasil Panen', navCalendar:'Kalender Tanam', navInventory:'Inventaris',
+    navFinance:'Keuangan', navReports:'Laporan', userRole:'Farm Owner',
+    pgDashboard:'Dashboard', pgWeather:'Cuaca & Kondisi Lahan', pgWorkers:'Data Pekerja',
+    pgAttendance:'Absensi Harian', pgTasks:'Manajemen Tugas', pgPayroll:'Penggajian',
+    pgHarvest:'Hasil Panen', pgCalendar:'Kalender Tanam', pgInventory:'Inventaris & Stok',
+    pgFinance:'Keuangan', pgReports:'Laporan',
+    btnAddData:'+ Tambah Data', btnSave:'Simpan', btnCancel:'Batal', btnEdit:'Edit', btnDelete:'Hapus',
+    btnDownloadPDF:'Unduh PDF', btnPrintPDF:'Cetak PDF', btnProcessPayroll:'Proses Gaji',
+    btnAddWorker:'+ Tambah Pekerja', btnAddAttendance:'+ Input Absensi', btnAddTask:'+ Buat Tugas',
+    btnAddHarvest:'+ Catat Panen', btnAddStock:'+ Tambah Stok', btnAddTransaction:'+ Tambah',
+    btnSavePlanting:'Simpan Jadwal', btnSaveWorker:'Simpan Pekerja', btnSaveHarvest:'Simpan Panen',
+    btnSaveStock:'Simpan Stok', btnSaveTransaction:'Simpan', btnCreateTask:'Buat Tugas',
+    statPresent:'Hadir Hari Ini', statPresentChg:'↑ dari 10 kemarin',
+    statHarvestWeek:'Panen Minggu Ini', statHarvestChg:'↑ 12% dari minggu lalu',
+    statTaskPending:'Tugas Pending', statTaskChg:'3 mendekati deadline',
+    statRevenue:'Pendapatan Bulan Ini', statRevenueChg:'↑ 8% dari bulan lalu',
+    statHarvestChart:'Hasil Panen 7 Hari Terakhir (kg)', statRecentAct:'Aktivitas Terkini',
+    statNextHarvest:'Jadwal Panen Berikutnya', statInventoryStatus:'Status Inventaris',
+    weatherDashLabel:'🌤️ Cuaca Hari Ini · Niigata, Jepang',
+    weatherDesc:'Berawan Sebagian · Kelembaban 68%',
+    weatherWind:'💨 Angin: 12 km/h', weatherRain:'🌧️ Hujan: 10%',
+    weatherMin:'🌡️ Min: 16°C', weatherUV:'☀️ UV: Rendah',
+    weatherTodayLabel:'Hari ini · Berawan', weatherTmrwLabel:'Besok · Gerimis Ringan', weatherAfterLabel:'Lusa · Cerah',
+    field1Name:'🟩 Lahan A — Kubis & Wortel', field2Name:'🟨 Lahan B — Tomat', field3Name:'🟦 Lahan C — Padi',
+    fieldSoilTemp:'Suhu Tanah', fieldHumidity:'Kelembaban', fieldPH:'pH Tanah',
+    fieldIrrigation:'Irigasi', fieldStatus:'Status', fieldRecTitle:'Rekomendasi Tindakan Hari Ini',
+    rec1Title:'Pemupukan Lahan B Mendesak', rec1Desc:'Kelembaban tanah di bawah optimal, kadar nitrogen rendah. Rekomen pupuk NPK 15kg.',
+    rec2Title:'Kondisi Lahan A & C Baik', rec2Desc:'Tidak ada tindakan khusus. Lanjutkan irigasi rutin dan monitoring harian.',
+    rec3Title:'Gerimis Besok — Tunda Pestisida', rec3Desc:'Penyemprotan pestisida sebaiknya ditunda hingga Rabu saat cuaca cerah kembali.',
+    thName:'Nama', thPosition:'Posisi', thPhone:'No. HP', thJoinDate:'Bergabung',
+    thDailySalary:'Gaji/Hari', thStatus:'Status', thAction:'Aksi',
+    thWorkerName:'Nama Pekerja', thCheckIn:'Jam Masuk', thCheckOut:'Jam Keluar',
+    thTotalHours:'Total Jam', thRemark:'Keterangan',
+    thWorkDays:'Hari Kerja', thOvertime:'Lembur (jam)', thBaseSalary:'Gaji Pokok',
+    thOvertimePay:'Uang Lembur', thTotal:'Total',
+    thDate:'Tanggal', thCommodity:'Komoditas', thField:'Lahan',
+    thWeight:'Berat (kg)', thQuality:'Kualitas', thDestination:'Tujuan', thValue:'Nilai (¥)',
+    thItem:'Item', thCategory:'Kategori', thStock:'Stok', thUnit:'Satuan',
+    thMinStock:'Min. Stok', thLastUpdate:'Update Terakhir',
+    stActive:'Aktif', stLeave:'Cuti', stPresent:'Hadir', stAbsent:'Tidak Hadir',
+    stSick:'Sakit', stPermission:'Izin', stOvertime:'Lembur',
+    stSafe:'Aman', stLow:'Rendah', stEmpty:'Habis', stPaid:'Dibayar', stPending:'Pending',
+    stOptimal:'Optimal', stNeedsFertilizer:'Perlu Pupuk', stGood:'Baik',
+    stActive2:'Aktif', stScheduled:'Terjadwal',
+    prHigh:'Tinggi', prMed:'Sedang', prLow:'Rendah',
+    kanTodo:'📋 Belum Dimulai', kanDoing:'⚡ Sedang Berjalan', kanDone:'✅ Selesai',
+    wrkTotal:'Total Pekerja', wrkActive:'Status Aktif', wrkLeave:'Cuti / Tidak Aktif',
+    wrkMonthlySalary:'Total Gaji/Bulan', wrkList:'Daftar Pekerja',
+    attPresent:'Hadir', attAbsent:'Tidak Hadir', attSickOff:'Izin / Sakit',
+    attTotalHours:'Total Jam Kerja', attTitle:'Absensi Hari Ini — Senin, 2 Juni 2025',
+    hvToday:'Panen Hari Ini', hvWeek:'Panen Minggu Ini', hvMonth:'Panen Bulan Ini',
+    hvValue:'Nilai Panen', hvLog:'Log Hasil Panen',
+    invTotal:'Total Item', invSafe:'Stok Aman', invLow:'Stok Rendah',
+    invEmpty:'Stok Habis', invList:'Daftar Stok & Inventaris',
+    finRevenue:'Pendapatan Bulan Ini', finExpense:'Pengeluaran Bulan Ini',
+    finProfit:'Keuntungan Bersih', finMargin:'Margin Keuntungan', finMarginChg:'Bulan lalu: 30%',
+    finTxTitle:'Transaksi Terbaru', finExpBreak:'Pengeluaran per Kategori',
+    finSummary:'Ringkasan Bulan Ini', finRice:'Penjualan Padi', finVeg:'Penjualan Sayuran',
+    finWage:'Gaji Pekerja', finFertilizer:'Pupuk & Pestisida', finOther:'Lain-lain',
+    payTotal:'Total Gaji Juni', payPaid:'Sudah Dibayar', payUnpaid:'Belum Dibayar',
+    payActive:'Pekerja Aktif', payTitle:'Rekap Gaji — Juni 2025',
+    rptTitle:'Laporan Tersedia', rptPerfChart:'Performa Keuangan 6 Bulan (¥K)',
+    rptIncome:'Pendapatan', rptExpense:'Pengeluaran',
+    calTitle:'Kalender Tanam — Juni 2025', calSchedule:'Jadwal Tanam Aktif',
+    calAdd:'+ Tambah Jadwal Tanam', calCommodity:'Komoditas', calPlantDate:'Tanggal Tanam',
+    calHarvestEst:'Estimasi Panen', calField:'Lahan', calToday:'Hari Ini', calScheduled:'Ada Jadwal',
+    mWorkerTitle:'👷 Tambah Pekerja Baru', mAbsenTitle:'📅 Input Absensi',
+    mTaskTitle:'📋 Buat Tugas Baru', mHarvestTitle:'🌾 Catat Hasil Panen',
+    mInvTitle:'📦 Tambah / Update Stok', mFinTitle:'💴 Tambah Transaksi',
+    fFullName:'Nama Lengkap', fPosition:'Posisi', fPhone:'Nomor HP', fJoinDate:'Tanggal Bergabung',
+    fDailySalary:'Gaji per Hari (¥)', fStatusF:'Status', fWorker:'Pilih Pekerja',
+    fDateF:'Tanggal', fStatusAtt:'Status', fCheckIn:'Jam Masuk', fCheckOut:'Jam Keluar',
+    fRemarks:'Keterangan', fTaskTitle:'Judul Tugas', fDescription:'Deskripsi',
+    fAssignTo:'Assign ke', fPriority:'Prioritas', fDeadline:'Deadline', fRelatedField:'Lahan Terkait (opsional)',
+    fHarvestDate:'Tanggal Panen', fCommodity:'Komoditas', fField:'Lahan',
+    fWeight:'Berat Total (kg)', fQuality:'Kualitas / Grade', fDestination:'Tujuan Pengiriman',
+    fPricePerKg:'Harga Jual/kg (¥)', fItemName:'Nama Item', fCategory:'Kategori',
+    fStockQty:'Jumlah Stok', fUnit:'Satuan', fMinStock:'Stok Minimum',
+    fTxType:'Tipe Transaksi', fTxCategory:'Kategori', fAmount:'Jumlah (¥)', fTxDesc:'Keterangan',
+    phName:'Contoh: Andi Saputra', phPhone:'08xx-xxxx-xxxx', phOptional:'Opsional...',
+    phTaskTitle:'Contoh: Penyiraman Lahan A pagi...', phTaskDesc:'Detail instruksi...',
+    phItemName:'Nama barang...', phUnit:'kg / liter / unit / buah...', phTxDesc:'Deskripsi transaksi...',
+    posGeneral:'Petani Umum', posSupervisor:'Supervisor Lahan', posMachine:'Operator Mesin',
+    posWarehouse:'Staf Gudang', posDriver:'Driver / Pengiriman',
+    optTrial:'Percobaan', optTeamAll:'Tim A (semua)',
+    cropRice:'Padi', cropTomato:'Tomat', cropCabbage:'Kubis', cropCarrot:'Wortel',
+    cropOnion:'Bawang', cropSpinach:'Bayam',
+    gradeA:'Grade A — Premium', gradeB:'Grade B — Standar', gradeC:'Grade C — Lokal',
+    destExport:'Ekspor', destLocal:'Pasar Lokal', destCoop:'Koperasi', destDirect:'Dijual Langsung',
+    catFertilizer:'Pupuk', catPesticide:'Pestisida', catTool:'Alat & Mesin',
+    catSeed:'Bibit', catFuel:'BBM', catOther:'Lainnya',
+    txIncome:'Pemasukan', txExpense:'Pengeluaran',
+    txCatHarvest:'Penjualan Hasil Panen', txCatWage:'Gaji Pekerja',
+    txCatFertilizer:'Pupuk & Pestisida', txCatMachine:'Perawatan Alat & Mesin',
+    txCatSeed:'Pembelian Bibit', txCatUtil:'Listrik & Air', txCatTransport:'Transportasi',
+    hrs:'jam', days:['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
+    months:['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'],
+    calDays:['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
+    dayMin:'Min', daySen:'Sen', daySel:'Sel', dayRab:'Rab', dayKam:'Kam', dayJum:'Jum', daySab:'Sab',
+    filterAllWorkers:'Semua Pekerja', filterAllPriority:'Semua Prioritas',
+    calPlant:'Tanam', calHarvest:'Panen',
+    cropGrowing:'Tumbuh', cropPartial:'Panen Bertahap', cropEarly:'Awal',
+    actHarvest:'Panen tomat 142 kg berhasil dicatat dari Lahan B',
+    actRepair:'Dedi Prasetyo mulai lembur perbaikan traktor #2',
+    actStock:'Stok Pupuk Urea hampir habis — sisa 35 kg',
+    actTask:'Tugas "Pemeriksaan hama mingguan" selesai',
+    actSale:'Transaksi penjualan tomat ¥120K tercatat',
+    actAgo1:'1 jam lalu', actAgo2:'2 jam lalu', actAgo3:'3 jam lalu', actAgo4:'4 jam lalu', actAgo5:'5 jam lalu',
+    expCatWage:'Gaji Pekerja', expCatFert:'Pupuk & Bahan', expCatMachine:'Perawatan Mesin', expCatOther:'Lainnya',
+    rptMonthlyFin:'Laporan Keuangan Bulanan', rptHarvest:'Laporan Hasil Panen',
+    rptPayroll:'Laporan Absensi & Gaji', rptInventory:'Laporan Inventaris & Stok',
+    rptFieldPerf:'Laporan Kinerja Lahan', rptAnnual:'Laporan Tahunan Komprehensif',
+    toastSaved:'✅ Data berhasil disimpan', toastPDF:'📄 Mengunduh PDF...', toastProcessed:'💳 Gaji diproses!',
+    financeIncome:'income', financeExpense:'expense',
+  },
+  en: {
+    appSubtitle:'Farm Management',
+    navMain:'Main', navHR:'Human Resources', navFarming:'Farming', navFinanceSection:'Finance',
+    navDashboard:'Dashboard', navWeather:'Weather & Field', navWorkers:'Workers',
+    navAttendance:'Daily Attendance', navTasks:'Task Management', navPayroll:'Payroll',
+    navHarvest:'Harvest', navCalendar:'Planting Calendar', navInventory:'Inventory',
+    navFinance:'Finance', navReports:'Reports', userRole:'Farm Owner',
+    pgDashboard:'Dashboard', pgWeather:'Weather & Field Conditions', pgWorkers:'Worker Data',
+    pgAttendance:'Daily Attendance', pgTasks:'Task Management', pgPayroll:'Payroll',
+    pgHarvest:'Harvest Results', pgCalendar:'Planting Calendar', pgInventory:'Inventory & Stock',
+    pgFinance:'Finance', pgReports:'Reports',
+    btnAddData:'+ Add Data', btnSave:'Save', btnCancel:'Cancel', btnEdit:'Edit', btnDelete:'Delete',
+    btnDownloadPDF:'Download PDF', btnPrintPDF:'Print PDF', btnProcessPayroll:'Process Payroll',
+    btnAddWorker:'+ Add Worker', btnAddAttendance:'+ Add Attendance', btnAddTask:'+ Create Task',
+    btnAddHarvest:'+ Record Harvest', btnAddStock:'+ Add Stock', btnAddTransaction:'+ Add',
+    btnSavePlanting:'Save Schedule', btnSaveWorker:'Save Worker', btnSaveHarvest:'Save Harvest',
+    btnSaveStock:'Save Stock', btnSaveTransaction:'Save', btnCreateTask:'Create Task',
+    statPresent:'Present Today', statPresentChg:'↑ from 10 yesterday',
+    statHarvestWeek:'Harvest This Week', statHarvestChg:'↑ 12% from last week',
+    statTaskPending:'Pending Tasks', statTaskChg:'3 approaching deadline',
+    statRevenue:'Revenue This Month', statRevenueChg:'↑ 8% from last month',
+    statHarvestChart:'Harvest Last 7 Days (kg)', statRecentAct:'Recent Activity',
+    statNextHarvest:'Upcoming Harvest Schedule', statInventoryStatus:'Inventory Status',
+    weatherDashLabel:'🌤️ Today\'s Weather · Niigata, Japan',
+    weatherDesc:'Partly Cloudy · Humidity 68%',
+    weatherWind:'💨 Wind: 12 km/h', weatherRain:'🌧️ Rain: 10%',
+    weatherMin:'🌡️ Min: 16°C', weatherUV:'☀️ UV: Low',
+    weatherTodayLabel:'Today · Cloudy', weatherTmrwLabel:'Tomorrow · Light Drizzle', weatherAfterLabel:'Day After · Sunny',
+    field1Name:'🟩 Field A — Cabbage & Carrot', field2Name:'🟨 Field B — Tomato', field3Name:'🟦 Field C — Rice',
+    fieldSoilTemp:'Soil Temp', fieldHumidity:'Humidity', fieldPH:'Soil pH',
+    fieldIrrigation:'Irrigation', fieldStatus:'Status', fieldRecTitle:'Today\'s Action Recommendations',
+    rec1Title:'Field B Fertilization Urgent', rec1Desc:'Soil moisture below optimal, low nitrogen level. Recommend 15kg NPK fertilizer.',
+    rec2Title:'Field A & C Condition Good', rec2Desc:'No special action needed. Continue routine irrigation and daily monitoring.',
+    rec3Title:'Drizzle Tomorrow — Delay Pesticides', rec3Desc:'Pesticide spraying should be postponed until Wednesday when weather clears.',
+    thName:'Name', thPosition:'Position', thPhone:'Phone', thJoinDate:'Joined',
+    thDailySalary:'Daily Wage', thStatus:'Status', thAction:'Action',
+    thWorkerName:'Worker Name', thCheckIn:'Check In', thCheckOut:'Check Out',
+    thTotalHours:'Total Hours', thRemark:'Remark',
+    thWorkDays:'Work Days', thOvertime:'Overtime (hrs)', thBaseSalary:'Base Salary',
+    thOvertimePay:'Overtime Pay', thTotal:'Total',
+    thDate:'Date', thCommodity:'Commodity', thField:'Field',
+    thWeight:'Weight (kg)', thQuality:'Quality', thDestination:'Destination', thValue:'Value (¥)',
+    thItem:'Item', thCategory:'Category', thStock:'Stock', thUnit:'Unit',
+    thMinStock:'Min. Stock', thLastUpdate:'Last Updated',
+    stActive:'Active', stLeave:'On Leave', stPresent:'Present', stAbsent:'Absent',
+    stSick:'Sick', stPermission:'Off', stOvertime:'Overtime',
+    stSafe:'OK', stLow:'Low', stEmpty:'Out of Stock', stPaid:'Paid', stPending:'Pending',
+    stOptimal:'Optimal', stNeedsFertilizer:'Needs Fertilizer', stGood:'Good',
+    stActive2:'Active', stScheduled:'Scheduled',
+    prHigh:'High', prMed:'Medium', prLow:'Low',
+    kanTodo:'📋 To Do', kanDoing:'⚡ In Progress', kanDone:'✅ Done',
+    wrkTotal:'Total Workers', wrkActive:'Active', wrkLeave:'On Leave / Inactive',
+    wrkMonthlySalary:'Monthly Payroll', wrkList:'Worker List',
+    attPresent:'Present', attAbsent:'Absent', attSickOff:'Off / Sick',
+    attTotalHours:'Total Work Hours', attTitle:'Attendance — Monday, 2 June 2025',
+    hvToday:'Harvest Today', hvWeek:'Harvest This Week', hvMonth:'Harvest This Month',
+    hvValue:'Harvest Value', hvLog:'Harvest Log',
+    invTotal:'Total Items', invSafe:'Safe Stock', invLow:'Low Stock',
+    invEmpty:'Out of Stock', invList:'Stock & Inventory List',
+    finRevenue:'Revenue This Month', finExpense:'Expenses This Month',
+    finProfit:'Net Profit', finMargin:'Profit Margin', finMarginChg:'Last month: 30%',
+    finTxTitle:'Recent Transactions', finExpBreak:'Expense Breakdown',
+    finSummary:'Monthly Summary', finRice:'Rice Sales', finVeg:'Vegetable Sales',
+    finWage:'Worker Wages', finFertilizer:'Fertilizer & Pesticides', finOther:'Others',
+    payTotal:'Total June Payroll', payPaid:'Paid', payUnpaid:'Unpaid',
+    payActive:'Active Workers', payTitle:'Payroll Summary — June 2025',
+    rptTitle:'Available Reports', rptPerfChart:'6-Month Financial Performance (¥K)',
+    rptIncome:'Revenue', rptExpense:'Expenses',
+    calTitle:'Planting Calendar — June 2025', calSchedule:'Active Planting Schedules',
+    calAdd:'+ Add Planting Schedule', calCommodity:'Commodity', calPlantDate:'Planting Date',
+    calHarvestEst:'Est. Harvest', calField:'Field', calToday:'Today', calScheduled:'Scheduled',
+    mWorkerTitle:'👷 Add New Worker', mAbsenTitle:'📅 Record Attendance',
+    mTaskTitle:'📋 Create New Task', mHarvestTitle:'🌾 Record Harvest',
+    mInvTitle:'📦 Add / Update Stock', mFinTitle:'💴 Add Transaction',
+    fFullName:'Full Name', fPosition:'Position', fPhone:'Phone Number', fJoinDate:'Join Date',
+    fDailySalary:'Daily Wage (¥)', fStatusF:'Status', fWorker:'Select Worker',
+    fDateF:'Date', fStatusAtt:'Status', fCheckIn:'Check In', fCheckOut:'Check Out',
+    fRemarks:'Remarks', fTaskTitle:'Task Title', fDescription:'Description',
+    fAssignTo:'Assign To', fPriority:'Priority', fDeadline:'Deadline', fRelatedField:'Related Field (optional)',
+    fHarvestDate:'Harvest Date', fCommodity:'Commodity', fField:'Field',
+    fWeight:'Total Weight (kg)', fQuality:'Quality / Grade', fDestination:'Destination',
+    fPricePerKg:'Selling Price/kg (¥)', fItemName:'Item Name', fCategory:'Category',
+    fStockQty:'Stock Quantity', fUnit:'Unit', fMinStock:'Minimum Stock',
+    fTxType:'Transaction Type', fTxCategory:'Category', fAmount:'Amount (¥)', fTxDesc:'Description',
+    phName:'e.g. John Smith', phPhone:'+62 8xx-xxxx-xxxx', phOptional:'Optional...',
+    phTaskTitle:'e.g. Irrigate Field A morning...', phTaskDesc:'Detailed instructions...',
+    phItemName:'Item name...', phUnit:'kg / liter / unit / pcs...', phTxDesc:'Transaction description...',
+    posGeneral:'General Farmer', posSupervisor:'Field Supervisor', posMachine:'Machine Operator',
+    posWarehouse:'Warehouse Staff', posDriver:'Driver / Delivery',
+    optTrial:'Probation', optTeamAll:'Team A (all)',
+    cropRice:'Rice', cropTomato:'Tomato', cropCabbage:'Cabbage', cropCarrot:'Carrot',
+    cropOnion:'Onion', cropSpinach:'Spinach',
+    gradeA:'Grade A — Premium', gradeB:'Grade B — Standard', gradeC:'Grade C — Local',
+    destExport:'Export', destLocal:'Local Market', destCoop:'Cooperative', destDirect:'Direct Sale',
+    catFertilizer:'Fertilizer', catPesticide:'Pesticide', catTool:'Tools & Machinery',
+    catSeed:'Seeds', catFuel:'Fuel', catOther:'Others',
+    txIncome:'Income', txExpense:'Expense',
+    txCatHarvest:'Harvest Sales', txCatWage:'Worker Wages',
+    txCatFertilizer:'Fertilizer & Pesticides', txCatMachine:'Equipment Maintenance',
+    txCatSeed:'Seed Purchase', txCatUtil:'Electricity & Water', txCatTransport:'Transportation',
+    hrs:'hrs', days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    months:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    calDays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    dayMin:'Sun', daySen:'Mon', daySel:'Tue', dayRab:'Wed', dayKam:'Thu', dayJum:'Fri', daySab:'Sat',
+    filterAllWorkers:'All Workers', filterAllPriority:'All Priorities',
+    calPlant:'Plant', calHarvest:'Harvest',
+    cropGrowing:'Growing', cropPartial:'Partial Harvest', cropEarly:'Early Stage',
+    actHarvest:'142 kg tomato harvest recorded from Field B',
+    actRepair:'Dedi Prasetyo started overtime for tractor #2 repair',
+    actStock:'Urea fertilizer almost empty — 35 kg remaining',
+    actTask:'Task "Weekly pest inspection" completed',
+    actSale:'Tomato sale transaction ¥120K recorded',
+    actAgo1:'1 hr ago', actAgo2:'2 hrs ago', actAgo3:'3 hrs ago', actAgo4:'4 hrs ago', actAgo5:'5 hrs ago',
+    expCatWage:'Worker Wages', expCatFert:'Fertilizer & Materials', expCatMachine:'Machine Maintenance', expCatOther:'Others',
+    rptMonthlyFin:'Monthly Financial Report', rptHarvest:'Harvest Report',
+    rptPayroll:'Attendance & Payroll Report', rptInventory:'Inventory & Stock Report',
+    rptFieldPerf:'Field Performance Report', rptAnnual:'Comprehensive Annual Report',
+    toastSaved:'✅ Data saved successfully', toastPDF:'📄 Downloading PDF...', toastProcessed:'💳 Payroll processed!',
+    financeIncome:'income', financeExpense:'expense',
+  },
+  ja: {
+    appSubtitle:'農場管理システム',
+    navMain:'メイン', navHR:'人事管理', navFarming:'農業', navFinanceSection:'財務',
+    navDashboard:'ダッシュボード', navWeather:'天気・農地', navWorkers:'作業員',
+    navAttendance:'日次出勤', navTasks:'タスク管理', navPayroll:'給与管理',
+    navHarvest:'収穫実績', navCalendar:'作付けカレンダー', navInventory:'在庫管理',
+    navFinance:'財務', navReports:'レポート', userRole:'農場オーナー',
+    pgDashboard:'ダッシュボード', pgWeather:'天気・農地状況', pgWorkers:'作業員データ',
+    pgAttendance:'日次出勤管理', pgTasks:'タスク管理', pgPayroll:'給与管理',
+    pgHarvest:'収穫実績', pgCalendar:'作付けカレンダー', pgInventory:'在庫・ストック',
+    pgFinance:'財務管理', pgReports:'レポート',
+    btnAddData:'＋ データ追加', btnSave:'保存', btnCancel:'キャンセル', btnEdit:'編集', btnDelete:'削除',
+    btnDownloadPDF:'PDFダウンロード', btnPrintPDF:'PDF印刷', btnProcessPayroll:'給与処理',
+    btnAddWorker:'＋ 作業員追加', btnAddAttendance:'＋ 出勤入力', btnAddTask:'＋ タスク作成',
+    btnAddHarvest:'＋ 収穫記録', btnAddStock:'＋ 在庫追加', btnAddTransaction:'＋ 追加',
+    btnSavePlanting:'スケジュール保存', btnSaveWorker:'作業員保存', btnSaveHarvest:'収穫保存',
+    btnSaveStock:'在庫保存', btnSaveTransaction:'保存', btnCreateTask:'タスク作成',
+    statPresent:'本日出勤者', statPresentChg:'↑ 昨日より2名増',
+    statHarvestWeek:'今週の収穫量', statHarvestChg:'↑ 先週比12%増',
+    statTaskPending:'未完了タスク', statTaskChg:'3件が期限間近',
+    statRevenue:'今月の売上', statRevenueChg:'↑ 先月比8%増',
+    statHarvestChart:'過去7日間の収穫量 (kg)', statRecentAct:'最近の活動',
+    statNextHarvest:'次回収穫スケジュール', statInventoryStatus:'在庫状況',
+    weatherDashLabel:'🌤️ 今日の天気 · 新潟県',
+    weatherDesc:'一部曇り · 湿度68%',
+    weatherWind:'💨 風速: 12 km/h', weatherRain:'🌧️ 降水: 10%',
+    weatherMin:'🌡️ 最低: 16°C', weatherUV:'☀️ UV: 低',
+    weatherTodayLabel:'今日 · 曇り', weatherTmrwLabel:'明日 · 小雨', weatherAfterLabel:'明後日 · 晴れ',
+    field1Name:'🟩 農地A — キャベツ・人参', field2Name:'🟨 農地B — トマト', field3Name:'🟦 農地C — 稲',
+    fieldSoilTemp:'地温', fieldHumidity:'湿度', fieldPH:'土壌pH',
+    fieldIrrigation:'灌漑', fieldStatus:'状態', fieldRecTitle:'本日の推奨アクション',
+    rec1Title:'農地B 施肥が急務', rec1Desc:'土壌水分が最適値以下、窒素不足。NPK肥料15kgを推奨。',
+    rec2Title:'農地A・Cの状態は良好', rec2Desc:'特別な対応不要。定期的な灌漑と日常モニタリングを継続。',
+    rec3Title:'明日は小雨 — 農薬散布を延期', rec3Desc:'農薬散布は晴天が戻る水曜日まで延期することをお勧めします。',
+    thName:'名前', thPosition:'役職', thPhone:'電話番号', thJoinDate:'入社日',
+    thDailySalary:'日当', thStatus:'状態', thAction:'操作',
+    thWorkerName:'作業員名', thCheckIn:'出勤時間', thCheckOut:'退勤時間',
+    thTotalHours:'合計時間', thRemark:'備考',
+    thWorkDays:'勤務日数', thOvertime:'残業 (時間)', thBaseSalary:'基本給',
+    thOvertimePay:'残業代', thTotal:'合計',
+    thDate:'日付', thCommodity:'作物', thField:'農地',
+    thWeight:'重量 (kg)', thQuality:'品質', thDestination:'出荷先', thValue:'金額 (¥)',
+    thItem:'品目', thCategory:'カテゴリー', thStock:'在庫', thUnit:'単位',
+    thMinStock:'最小在庫', thLastUpdate:'最終更新',
+    stActive:'稼働中', stLeave:'休暇中', stPresent:'出勤', stAbsent:'欠勤',
+    stSick:'病気', stPermission:'休み', stOvertime:'残業',
+    stSafe:'適正', stLow:'不足', stEmpty:'在庫切れ', stPaid:'支払済', stPending:'未払い',
+    stOptimal:'最適', stNeedsFertilizer:'施肥必要', stGood:'良好',
+    stActive2:'稼働中', stScheduled:'予定済み',
+    prHigh:'高', prMed:'中', prLow:'低',
+    kanTodo:'📋 未着手', kanDoing:'⚡ 進行中', kanDone:'✅ 完了',
+    wrkTotal:'作業員総数', wrkActive:'稼働中', wrkLeave:'休暇・不在',
+    wrkMonthlySalary:'月間給与合計', wrkList:'作業員一覧',
+    attPresent:'出勤', attAbsent:'欠勤', attSickOff:'休み・病欠',
+    attTotalHours:'合計勤務時間', attTitle:'本日の出勤 — 2025年6月2日 月曜日',
+    hvToday:'本日の収穫量', hvWeek:'今週の収穫量', hvMonth:'今月の収穫量',
+    hvValue:'収穫金額', hvLog:'収穫ログ',
+    invTotal:'品目数', invSafe:'適正在庫', invLow:'在庫不足',
+    invEmpty:'在庫切れ', invList:'在庫・ストック一覧',
+    finRevenue:'今月の売上', finExpense:'今月の支出',
+    finProfit:'純利益', finMargin:'利益率', finMarginChg:'先月: 30%',
+    finTxTitle:'最近の取引', finExpBreak:'支出内訳',
+    finSummary:'今月のまとめ', finRice:'稲の販売', finVeg:'野菜の販売',
+    finWage:'作業員給与', finFertilizer:'肥料・農薬', finOther:'その他',
+    payTotal:'6月給与合計', payPaid:'支払済み', payUnpaid:'未払い',
+    payActive:'稼働中の作業員', payTitle:'給与明細 — 2025年6月',
+    rptTitle:'利用可能なレポート', rptPerfChart:'6ヶ月財務パフォーマンス (¥K)',
+    rptIncome:'収入', rptExpense:'支出',
+    calTitle:'作付けカレンダー — 2025年6月', calSchedule:'作付けスケジュール',
+    calAdd:'＋ 作付けスケジュール追加', calCommodity:'作物', calPlantDate:'作付け日',
+    calHarvestEst:'収穫予定', calField:'農地', calToday:'今日', calScheduled:'予定あり',
+    mWorkerTitle:'👷 作業員追加', mAbsenTitle:'📅 出勤入力',
+    mTaskTitle:'📋 新規タスク作成', mHarvestTitle:'🌾 収穫記録',
+    mInvTitle:'📦 在庫追加・更新', mFinTitle:'💴 取引追加',
+    fFullName:'フルネーム', fPosition:'役職', fPhone:'電話番号', fJoinDate:'入社日',
+    fDailySalary:'日当 (¥)', fStatusF:'状態', fWorker:'作業員選択',
+    fDateF:'日付', fStatusAtt:'状態', fCheckIn:'出勤時間', fCheckOut:'退勤時間',
+    fRemarks:'備考', fTaskTitle:'タスクタイトル', fDescription:'詳細',
+    fAssignTo:'担当者', fPriority:'優先度', fDeadline:'期限', fRelatedField:'関連農地 (任意)',
+    fHarvestDate:'収穫日', fCommodity:'作物', fField:'農地',
+    fWeight:'総重量 (kg)', fQuality:'品質・グレード', fDestination:'出荷先',
+    fPricePerKg:'販売価格/kg (¥)', fItemName:'品目名', fCategory:'カテゴリー',
+    fStockQty:'在庫数量', fUnit:'単位', fMinStock:'最小在庫量',
+    fTxType:'取引タイプ', fTxCategory:'カテゴリー', fAmount:'金額 (¥)', fTxDesc:'説明',
+    phName:'例: 山田太郎', phPhone:'080-xxxx-xxxx', phOptional:'任意...',
+    phTaskTitle:'例: 午前中の農地A灌漑...', phTaskDesc:'詳細な指示...',
+    phItemName:'品目名...', phUnit:'kg / リットル / 個...', phTxDesc:'取引の説明...',
+    posGeneral:'一般農業者', posSupervisor:'フィールド監督', posMachine:'機械オペレーター',
+    posWarehouse:'倉庫スタッフ', posDriver:'ドライバー・配達',
+    optTrial:'試用期間', optTeamAll:'チームA (全員)',
+    cropRice:'稲', cropTomato:'トマト', cropCabbage:'キャベツ', cropCarrot:'人参',
+    cropOnion:'玉ねぎ', cropSpinach:'ほうれん草',
+    gradeA:'グレードA — プレミアム', gradeB:'グレードB — スタンダード', gradeC:'グレードC — ローカル',
+    destExport:'輸出', destLocal:'地元市場', destCoop:'農業協同組合', destDirect:'直接販売',
+    catFertilizer:'肥料', catPesticide:'農薬', catTool:'農具・機械',
+    catSeed:'種子', catFuel:'燃料', catOther:'その他',
+    txIncome:'収入', txExpense:'支出',
+    txCatHarvest:'収穫物販売', txCatWage:'作業員給与',
+    txCatFertilizer:'肥料・農薬', txCatMachine:'機械メンテナンス',
+    txCatSeed:'種子購入', txCatUtil:'電気・水道', txCatTransport:'輸送費',
+    hrs:'時間', days:['日','月','火','水','木','金','土'],
+    months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+    calDays:['日','月','火','水','木','金','土'],
+    dayMin:'日', daySen:'月', daySel:'火', dayRab:'水', dayKam:'木', dayJum:'金', daySab:'土',
+    filterAllWorkers:'全作業員', filterAllPriority:'全優先度',
+    calPlant:'作付', calHarvest:'収穫',
+    cropGrowing:'生育中', cropPartial:'収穫中', cropEarly:'初期段階',
+    actHarvest:'農地Bから142kgのトマト収穫を記録しました',
+    actRepair:'Dedi Prasetyoがトラクター#2修理のため残業開始',
+    actStock:'尿素肥料の在庫残り僅か — 残り35kg',
+    actTask:'タスク「週次害虫点検」が完了しました',
+    actSale:'トマト販売取引 ¥120K を記録',
+    actAgo1:'1時間前', actAgo2:'2時間前', actAgo3:'3時間前', actAgo4:'4時間前', actAgo5:'5時間前',
+    expCatWage:'作業員給与', expCatFert:'肥料・資材', expCatMachine:'機械整備', expCatOther:'その他',
+    rptMonthlyFin:'月次財務レポート', rptHarvest:'収穫レポート',
+    rptPayroll:'出勤・給与レポート', rptInventory:'在庫レポート',
+    rptFieldPerf:'農地パフォーマンスレポート', rptAnnual:'年次総合レポート',
+    toastSaved:'✅ データを保存しました', toastPDF:'📄 PDFをダウンロード中...', toastProcessed:'💳 給与処理完了！',
+    financeIncome:'income', financeExpense:'expense',
+  }
+};
+
+let currentLang = 'id';
+
+function t(key) {
+  return (i18n[currentLang] && i18n[currentLang][key] !== undefined)
+    ? i18n[currentLang][key]
+    : (i18n['id'][key] || key);
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  // Update static elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const val = t(key);
+    if (typeof val === 'string') el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  // Update active page title
+  const ap = document.querySelector('.page.active');
+  if (ap) {
+    const pid = ap.id.replace('page-', '');
+    const pgMap = {
+      dashboard:'pgDashboard', cuaca:'pgWeather', pekerja:'pgWorkers',
+      absensi:'pgAttendance', tugas:'pgTasks', gaji:'pgPayroll',
+      panen:'pgHarvest', kalender:'pgCalendar', inventaris:'pgInventory',
+      keuangan:'pgFinance', laporan:'pgReports'
+    };
+    if (pgMap[pid]) document.getElementById('ptitle').textContent = t(pgMap[pid]);
+  }
+  // Update lang buttons
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  // Re-render dynamic content
+  renderAll();
+  updateDate();
+}
+
+// ========== DATA ==========
+const D = {
+  workers:[
+    {n:'Andi Saputra', pos:'posSupervisor', hp:'0812-3456-7890', j:'2024-01-15', s:3200, st:'stActive', i:'AS', c:'#e8f5e9', tc:'#2d5016'},
+    {n:'Budi Santoso', pos:'posGeneral', hp:'0812-3456-7891', j:'2024-02-01', s:2500, st:'stActive', i:'BS', c:'#e3f2fd', tc:'#1a56db'},
+    {n:'Citra Dewi', pos:'posGeneral', hp:'0812-3456-7892', j:'2024-02-15', s:2500, st:'stActive', i:'CD', c:'#fce4ec', tc:'#c62828'},
+    {n:'Dedi Prasetyo', pos:'posMachine', hp:'0812-3456-7893', j:'2024-03-01', s:3000, st:'stActive', i:'DP', c:'#fff8e1', tc:'#b8860b'},
+    {n:'Eka Putri', pos:'posGeneral', hp:'0812-3456-7894', j:'2024-03-10', s:2500, st:'stActive', i:'EP', c:'#f3e5f5', tc:'#6a1b9a'},
+    {n:'Fajar Nugroho', pos:'posWarehouse', hp:'0812-3456-7895', j:'2024-04-01', s:2800, st:'stActive', i:'FN', c:'#e8f5e9', tc:'#2d5016'},
+    {n:'Gita Rahma', pos:'posGeneral', hp:'0812-3456-7896', j:'2024-04-15', s:2500, st:'stLeave', i:'GR', c:'#e0f7fa', tc:'#006064'},
+    {n:'Hendra Wijaya', pos:'posDriver', hp:'0812-3456-7897', j:'2024-05-01', s:2600, st:'stActive', i:'HW', c:'#fff8e1', tc:'#b8860b'},
+  ],
+  absensi:[
+    {n:'Andi Saputra', mk:'07:00', kl:'16:00', tot:9, st:'stPresent', ket:'-'},
+    {n:'Budi Santoso', mk:'07:15', kl:'16:00', tot:8.75, st:'stPresent', ket:'-'},
+    {n:'Citra Dewi', mk:'-', kl:'-', tot:0, st:'stSick', ket:'Demam'},
+    {n:'Dedi Prasetyo', mk:'07:00', kl:'17:30', tot:10.5, st:'stOvertime', ket:'Traktor #2'},
+    {n:'Eka Putri', mk:'07:00', kl:'16:00', tot:9, st:'stPresent', ket:'-'},
+    {n:'Fajar Nugroho', mk:'07:00', kl:'16:00', tot:9, st:'stPresent', ket:'-'},
+    {n:'Gita Rahma', mk:'-', kl:'-', tot:0, st:'stPermission', ket:'Keperluan keluarga'},
+    {n:'Hendra Wijaya', mk:'06:30', kl:'15:30', tot:9, st:'stPresent', ket:''},
+  ],
+  tasks:{
+    todo:[
+      {t:'id:Pemupukan Lahan C blok 2|en:Fertilize Field C block 2|ja:農地Cブロック2の施肥', a:'Budi Santoso', pr:'prHigh', d:'5 Jun'},
+      {t:'id:Cek sistem irigasi blok 3|en:Check irrigation system block 3|ja:灌漑システムブロック3点検', a:'Andi Saputra', pr:'prMed', d:'6 Jun'},
+      {t:'id:Sortir bibit tomat F2|en:Sort tomato F2 seeds|ja:トマトF2種子の選別', a:'Citra Dewi', pr:'prLow', d:'8 Jun'},
+      {t:'id:Bersihkan gudang alat barat|en:Clean west tool warehouse|ja:西部農具倉庫の清掃', a:'Fajar Nugroho', pr:'prLow', d:'10 Jun'},
+    ],
+    doing:[
+      {t:'id:Penyiraman Lahan A & B pagi|en:Irrigate Fields A & B (morning)|ja:農地A・B朝の灌漑', a:'Tim Pagi', pr:'prHigh', d:'2 Jun'},
+      {t:'id:Perbaikan traktor unit #2|en:Repair tractor unit #2|ja:トラクター#2修理', a:'Dedi Prasetyo', pr:'prHigh', d:'3 Jun'},
+      {t:'id:Panen tomat blok 2 Lahan B|en:Harvest tomatoes block 2 Field B|ja:農地Bブロック2トマト収穫', a:'Eka Putri', pr:'prMed', d:'2 Jun'},
+      {t:'id:Pengangkutan hasil panen ke gudang|en:Transport harvest to warehouse|ja:収穫物の倉庫への搬送', a:'Hendra Wijaya', pr:'prMed', d:'2 Jun'},
+      {t:'id:Update log monitoring harian|en:Update daily monitoring log|ja:日次モニタリングログ更新', a:'Andi Saputra', pr:'prLow', d:'2 Jun'},
+    ],
+    done:[
+      {t:'id:Pemasangan jaring pelindung L.A|en:Install protective net Field A|ja:農地A防護ネット設置', a:'Tim A', pr:'prHigh', d:'30 Mei'},
+      {t:'id:Pemeriksaan hama mingguan|en:Weekly pest inspection|ja:週次害虫点検', a:'Andi Saputra', pr:'prHigh', d:'1 Jun'},
+      {t:'id:Pengiriman kubis ke koperasi|en:Deliver cabbage to cooperative|ja:農協へのキャベツ出荷', a:'Hendra Wijaya', pr:'prMed', d:'1 Jun'},
+    ],
+  },
+  gaji:[
+    {n:'Andi Saputra', hr:22, lb:5, pk:70400, lv:4000, tot:74400, st:'stPaid'},
+    {n:'Budi Santoso', hr:20, lb:0, pk:50000, lv:0, tot:50000, st:'stPaid'},
+    {n:'Citra Dewi', hr:18, lb:2, pk:45000, lv:1600, tot:46600, st:'stPending'},
+    {n:'Dedi Prasetyo', hr:22, lb:12, pk:66000, lv:9600, tot:75600, st:'stPaid'},
+    {n:'Eka Putri', hr:20, lb:0, pk:50000, lv:0, tot:50000, st:'stPending'},
+    {n:'Fajar Nugroho', hr:21, lb:3, pk:58800, lv:2400, tot:61200, st:'stPending'},
+    {n:'Hendra Wijaya', hr:22, lb:6, pk:57200, lv:4800, tot:62000, st:'stPaid'},
+  ],
+  harvests:[
+    {dt:'02 Jun', c:'🍅 Tomat', l:'Lahan B', kg:142, q:'Grade A', dest:'destExport', v:18460},
+    {dt:'01 Jun', c:'🥬 Kubis', l:'Lahan A', kg:98, q:'Grade B', dest:'destLocal', v:9800},
+    {dt:'31 Mei', c:'🌾 Padi', l:'Lahan C', kg:320, q:'Grade A', dest:'destCoop', v:38400},
+    {dt:'30 Mei', c:'🍅 Tomat', l:'Lahan B', kg:115, q:'Grade A', dest:'destExport', v:14950},
+    {dt:'29 Mei', c:'🥕 Wortel', l:'Lahan A', kg:87, q:'Grade B', dest:'destLocal', v:7830},
+    {dt:'28 Mei', c:'🥬 Kubis', l:'Lahan A', kg:76, q:'Grade A', dest:'destExport', v:9880},
+    {dt:'27 Mei', c:'🌾 Padi', l:'Lahan C', kg:280, q:'Grade A', dest:'destCoop', v:33600},
+  ],
+  inventory:[
+    {n:'NPK 15-15-15', cat:'catFertilizer', stok:120, u:'kg', min:50, st:'stSafe'},
+    {n:'Urea 46%', cat:'catFertilizer', stok:35, u:'kg', min:40, st:'stLow'},
+    {n:'Pupuk Organik Kompos', cat:'catFertilizer', stok:200, u:'kg', min:80, st:'stSafe'},
+    {n:'Pestisida Cair (Decis)', cat:'catPesticide', stok:8, u:'liter', min:10, st:'stLow'},
+    {n:'Fungisida Mancozeb', cat:'catPesticide', stok:15, u:'kg', min:10, st:'stSafe'},
+    {n:'Bibit Tomat F1', cat:'catSeed', stok:500, u:'butir', min:200, st:'stSafe'},
+    {n:'Bibit Kubis Hybrida', cat:'catSeed', stok:0, u:'butir', min:100, st:'stEmpty'},
+    {n:'Solar / BBM', cat:'catFuel', stok:45, u:'liter', min:20, st:'stSafe'},
+    {n:'Cangkul Besi', cat:'catTool', stok:12, u:'unit', min:5, st:'stSafe'},
+    {n:'Selang Irigasi 2"', cat:'catTool', stok:0, u:'roll', min:2, st:'stEmpty'},
+    {n:'Sarung Tangan Karet', cat:'catTool', stok:18, u:'pasang', min:10, st:'stSafe'},
+    {n:'Karung Goni 50kg', cat:'catTool', stok:3, u:'unit', min:20, st:'stLow'},
+  ],
+  finances:[
+    {tp:'income', cat:'id:Penjualan Tomat — Ekspor|en:Tomato Sales — Export|ja:トマト販売 — 輸出', amt:120000, dt:'1 Jun', ico:'🍅'},
+    {tp:'expense', cat:'id:Gaji Pekerja — Pembayaran 1|en:Worker Wages — Payment 1|ja:作業員給与 — 支払1', amt:74400, dt:'30 Mei', ico:'💴'},
+    {tp:'income', cat:'id:Penjualan Kubis — Koperasi|en:Cabbage Sales — Cooperative|ja:キャベツ販売 — 農協', amt:48000, dt:'28 Mei', ico:'🥬'},
+    {tp:'expense', cat:'id:Pupuk NPK & Pestisida|en:NPK Fertilizer & Pesticides|ja:NPK肥料・農薬', amt:32000, dt:'27 Mei', ico:'🌿'},
+    {tp:'expense', cat:'id:Perbaikan Traktor #2|en:Tractor #2 Repair|ja:トラクター#2修理', amt:15000, dt:'26 Mei', ico:'🔧'},
+    {tp:'income', cat:'id:Penjualan Padi — Koperasi|en:Rice Sales — Cooperative|ja:稲販売 — 農協', amt:96000, dt:'25 Mei', ico:'🌾'},
+    {tp:'expense', cat:'id:BBM & Transportasi|en:Fuel & Transportation|ja:燃料・輸送', amt:8500, dt:'24 Mei', ico:'⛽'},
+    {tp:'income', cat:'id:Penjualan Wortel — Pasar|en:Carrot Sales — Market|ja:人参販売 — 市場', amt:22000, dt:'23 Mei', ico:'🥕'},
+  ],
+  crops:[
+    {c:'🌾', nameKey:'cropRice', l:'Lahan C', t:'15 Apr', p:'15 Jul', pct:55, stKey:'cropGrowing'},
+    {c:'🍅', nameKey:'cropTomato', l:'Lahan B', t:'1 Mei', p:'30 Jun', pct:80, stKey:'cropPartial'},
+    {c:'🥬', nameKey:'cropCabbage', l:'Lahan A', t:'10 Mei', p:'10 Jul', pct:65, stKey:'cropGrowing'},
+    {c:'🥕', nameKey:'cropCarrot', l:'Lahan A', t:'20 Mei', p:'20 Agu', pct:30, stKey:'cropEarly'},
+  ],
+  harvestChart:[
+    {dk:'daySen', v:95},{dk:'daySel', v:128},{dk:'dayRab', v:115},
+    {dk:'dayKam', v:142},{dk:'dayJum', v:88},{dk:'daySab', v:162},{dk:'dayMin', v:110}
+  ],
+};
+
+// ========== HELPERS ==========
+function tl(str) {
+  // Parse multilingual string "id:...|en:...|ja:..."
+  if (!str || !str.includes('|')) return str;
+  const parts = {};
+  str.split('|').forEach(p => {
+    const [lang, ...rest] = p.split(':');
+    parts[lang] = rest.join(':');
+  });
+  return parts[currentLang] || parts['id'] || str;
+}
+
+function stBadge(stKey) {
+  const cls = {
+    stActive:'bg', stLeave:'bo', stPresent:'bg', stAbsent:'br',
+    stSick:'br', stPermission:'bo', stOvertime:'bb',
+    stSafe:'bg', stLow:'bo', stEmpty:'br', stPaid:'bg', stPending:'bo',
+  };
+  return `<span class="badge ${cls[stKey]||'bgy'}">${t(stKey)}</span>`;
+}
+
+function prBadge(prKey) {
+  const cls = {prHigh:'br', prMed:'bo', prLow:'bgy'};
+  return `<span class="badge ${cls[prKey]||'bgy'}">${t(prKey)}</span>`;
+}
+
+function qBadge(q) {
+  const cls = {'Grade A':'bg','Grade B':'bo','Grade C':'bgy'};
+  return `<span class="badge ${cls[q]||'bgy'}">${q}</span>`;
+}
+
+// ========== RENDERS ==========
+function rWorkers() {
+  document.getElementById('tWorker').innerHTML = D.workers.map(w => `
+    <tr>
+      <td><div class="avname"><div class="av" style="background:${w.c};color:${w.tc}">${w.i}</div><strong>${w.n}</strong></div></td>
+      <td>${t(w.pos)}</td>
+      <td style="color:var(--t2)">${w.hp}</td>
+      <td style="color:var(--t2)">${w.j}</td>
+      <td>¥${w.s.toLocaleString()}</td>
+      <td>${stBadge(w.st)}</td>
+      <td style="display:flex;gap:5px">
+        <button class="btn btns btnsm" onclick="showToast(t('toastSaved'))">${t('btnEdit')}</button>
+        <button class="btn btns btnsm" style="color:#c0392b">${t('btnDelete')}</button>
+      </td>
+    </tr>`).join('');
+}
+
+function rAbsensi() {
+  document.getElementById('tAbsen').innerHTML = D.absensi.map(a => `
+    <tr>
+      <td><strong>${a.n}</strong></td>
+      <td>${a.mk}</td><td>${a.kl}</td>
+      <td>${a.tot > 0 ? a.tot + ' ' + t('hrs') : '-'}</td>
+      <td>${stBadge(a.st)}</td>
+      <td style="color:var(--t3)">${a.ket || '-'}</td>
+    </tr>`).join('');
+}
+
+function rTasks() {
+  const fw = document.getElementById('filterWorker').value;
+  const fp = document.getElementById('filterPriority').value;
+  const prMap = {high:'prHigh', med:'prMed', low:'prLow'};
+
+  ['todo','doing','done'].forEach(col => {
+    let tasks = D.tasks[col];
+    if (fw) tasks = tasks.filter(tk => tk.a === fw || tk.a.includes(fw));
+    if (fp && prMap[fp]) tasks = tasks.filter(tk => tk.pr === prMap[fp]);
+
+    document.getElementById('k'+col).innerHTML = tasks.map(tk => `
+      <div class="kcard">
+        <div class="kctit">${tl(tk.t)}</div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:7px">👤 ${tk.a}</div>
+        <div class="kcmeta">${prBadge(tk.pr)}<span>📅 ${tk.d}</span></div>
+      </div>`).join('');
+
+    const cnt = {todo:'cntTodo', doing:'cntDoing', done:'cntDone'};
+    document.getElementById(cnt[col]).textContent = tasks.length;
+  });
+}
+
+function rGaji() {
+  document.getElementById('tGaji').innerHTML = D.gaji.map(g => `
+    <tr>
+      <td><strong>${g.n}</strong></td>
+      <td>${g.hr} ${currentLang==='ja'?'日':currentLang==='en'?'days':'hari'}</td>
+      <td>${g.lb} ${t('hrs')}</td>
+      <td>¥${g.pk.toLocaleString()}</td>
+      <td>¥${g.lv.toLocaleString()}</td>
+      <td><strong>¥${g.tot.toLocaleString()}</strong></td>
+      <td>${stBadge(g.st)}</td>
+    </tr>`).join('');
+}
+
+function rHarvest() {
+  document.getElementById('tHarvest').innerHTML = D.harvests.map(h => `
+    <tr>
+      <td>${h.dt}</td>
+      <td><strong>${h.c}</strong></td>
+      <td>${h.l}</td>
+      <td><strong>${h.kg}</strong></td>
+      <td>${qBadge(h.q)}</td>
+      <td>${t(h.dest)}</td>
+      <td>¥${h.v.toLocaleString()}</td>
+    </tr>`).join('');
+}
+
+function rInventory() {
+  document.getElementById('tInv').innerHTML = D.inventory.map(i => `
+    <tr>
+      <td><strong>${i.n}</strong></td>
+      <td><span class="badge bgy">${t(i.cat)}</span></td>
+      <td><strong>${i.stok}</strong></td>
+      <td>${i.u}</td>
+      <td>${i.min}</td>
+      <td>${stBadge(i.st)}</td>
+      <td style="color:var(--t3)">2 Jun 2025</td>
+    </tr>`).join('');
+}
+
+function rFinance() {
+  document.getElementById('finList').innerHTML = D.finances.map(f => `
+    <div class="frow">
+      <div class="fico" style="background:${f.tp==='income'?'#e8f5e9':'#fde8e8'}">${f.ico}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${tl(f.cat)}</div>
+        <div style="font-size:11px;color:var(--t3)">${f.dt}</div>
+      </div>
+      <div class="famt ${f.tp==='income'?'inc':'exp'}">${f.tp==='income'?'+':'-'}¥${f.amt.toLocaleString()}</div>
+    </div>`).join('');
+
+  const cats = [
+    {k:'expCatWage', pct:55, col:'var(--g600)'},
+    {k:'expCatFert', pct:22, col:'var(--au500)'},
+    {k:'expCatMachine', pct:13, col:'#e67e22'},
+    {k:'expCatOther', pct:10, col:'var(--cr500)'},
+  ];
+  document.getElementById('expBreak').innerHTML = cats.map(e => `
+    <div style="margin-bottom:11px">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px">
+        <span>${t(e.k)}</span><span style="font-weight:700">${e.pct}%</span>
+      </div>
+      <div class="pb"><div class="pf" style="width:${e.pct}%;background:${e.col}"></div></div>
+    </div>`).join('');
+}
+
+function rHarvestChart() {
+  const max = Math.max(...D.harvestChart.map(d => d.v));
+  document.getElementById('harvestChart').innerHTML = D.harvestChart.map(d => `
+    <div class="bgroup">
+      <div class="bval">${d.v}</div>
+      <div class="bar" style="height:${Math.round(d.v/max*90)}px"></div>
+      <div class="blabel">${t(d.dk)}</div>
+    </div>`).join('');
+}
+
+function rCalendar() {
+  const evts = [2,5,10,15,20,25,28];
+  let html = '';
+  for(let d=1;d<=30;d++){
+    const isT = d===2, hasE = evts.includes(d);
+    html += `<div class="cday ${isT?'today':''} ${hasE&&!isT?'evt':''}">${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+  document.getElementById('cropSched').innerHTML = D.crops.map(c => `
+    <div class="cropcard">
+      <div class="cropico">${c.c}</div>
+      <div style="flex:1">
+        <div class="cropname">${t(c.nameKey)} · ${c.l}</div>
+        <div class="cropinfo">${t('calPlant')}: ${c.t} → ${t('calHarvest')}: ${c.p}</div>
+        <div class="pb"><div class="pf" style="width:${c.pct}%"></div></div>
+        <div style="font-size:10px;color:var(--t3);margin-top:3px">${c.pct}% · ${t(c.stKey)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function rDashboard() {
+  const acts = [
+    {ico:'🍅', tk:'actHarvest', agoK:'actAgo1'},
+    {ico:'🔧', tk:'actRepair', agoK:'actAgo2'},
+    {ico:'⚠️', tk:'actStock', agoK:'actAgo3'},
+    {ico:'✅', tk:'actTask', agoK:'actAgo4'},
+    {ico:'💴', tk:'actSale', agoK:'actAgo5'},
+  ];
+  document.getElementById('recentAct').innerHTML = acts.map(a => `
+    <div style="display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--bdr)">
+      <span style="font-size:15px">${a.ico}</span>
+      <div style="flex:1">
+        <div style="font-size:12.5px">${t(a.tk)}</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:1px">${t(a.agoK)}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('dashCrops').innerHTML = D.crops.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)">
+      <span style="font-size:13px">${c.c} ${t(c.nameKey)} · ${c.l}</span>
+      <span style="font-size:11px;color:var(--t3)">${t('calHarvest')} ${c.p}</span>
+    </div>`).join('');
+
+  document.getElementById('dashInv').innerHTML = D.inventory.slice(0,8).map(i => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bdr)">
+      <div>
+        <div style="font-size:13px;font-weight:600">${i.n}</div>
+        <div style="font-size:11px;color:var(--t3)">${i.stok} ${i.u}</div>
+      </div>
+      ${stBadge(i.st)}
+    </div>`).join('');
+}
+
+function rPerfChart() {
+  const data = [
+    {m:'Jan',inc:380,exp:260},{m:'Feb',inc:320,exp:240},{m:'Mar',inc:420,exp:280},
+    {m:'Apr',inc:460,exp:300},{m:'Mei',inc:440,exp:290},{m:'Jun',inc:480,exp:312}
+  ];
+  const mx = 500;
+  document.getElementById('perfChart').innerHTML = `
+    <div style="display:flex;gap:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px"><div style="width:10px;height:10px;border-radius:2px;background:var(--g400)"></div>${t('rptIncome')}</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px"><div style="width:10px;height:10px;border-radius:2px;background:#ef9a9a"></div>${t('rptExpense')}</div>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:10px;height:130px">
+      ${data.map(d=>`
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end">
+          <div style="width:100%;display:flex;gap:3px;justify-content:center;align-items:flex-end">
+            <div style="flex:1;height:${Math.round(d.inc/mx*118)}px;background:var(--g400);border-radius:3px 3px 0 0"></div>
+            <div style="flex:1;height:${Math.round(d.exp/mx*118)}px;background:#ef9a9a;border-radius:3px 3px 0 0"></div>
+          </div>
+          <div style="font-size:10px;color:var(--t3)">${d.m}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function rReports() {
+  const rpts = [
+    {k:'rptMonthlyFin', s:'June 2025'},
+    {k:'rptHarvest', s:'June 2025'},
+    {k:'rptPayroll', s:'June 2025'},
+    {k:'rptInventory', s:'June 2025'},
+    {k:'rptFieldPerf', s:'Q2 2025'},
+    {k:'rptAnnual', s:'2025'},
+  ];
+  document.getElementById('reportList').innerHTML = rpts.map(r => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid var(--bdr);border-radius:8px">
+      <div>
+        <div style="font-size:13px;font-weight:600">📄 ${t(r.k)}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">${r.s}</div>
+      </div>
+      <button class="btn btns btnsm" onclick="showToast(t('toastPDF'))">${t('btnDownloadPDF')}</button>
+    </div>`).join('');
+}
+
+function renderAll() {
+  rWorkers(); rAbsensi(); rTasks(); rGaji(); rHarvest(); rInventory();
+  rFinance(); rHarvestChart(); rCalendar(); rDashboard(); rPerfChart(); rReports();
+}
+
+// ========== NAV ==========
+const pgMap = {
+  dashboard:'pgDashboard', cuaca:'pgWeather', pekerja:'pgWorkers',
+  absensi:'pgAttendance', tugas:'pgTasks', gaji:'pgPayroll',
+  panen:'pgHarvest', kalender:'pgCalendar', inventaris:'pgInventory',
+  keuangan:'pgFinance', laporan:'pgReports'
+};
+const mMap = {pekerja:'mWorker', absensi:'mAbsen', tugas:'mTask', panen:'mHarvest', inventaris:'mInv', keuangan:'mFin'};
+
+function go(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('ptitle').textContent = t(pgMap[page]) || page;
+}
+
+function topBtn() {
+  const ap = document.querySelector('.page.active').id.replace('page-','');
+  if (mMap[ap]) sm(mMap[ap]);
+}
+
+function sm(id) { document.getElementById(id).style.display='flex'; }
+function hm(id, e) {
+  if (!e || e.target === document.getElementById(id)) document.getElementById(id).style.display='none';
+}
+
+// ========== DATE ==========
+function updateDate() {
+  const now = new Date();
+  const days = t('days');
+  const months = t('months');
+  if (Array.isArray(days) && Array.isArray(months)) {
+    document.getElementById('curDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  }
+}
+
+// ========== TOAST ==========
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ========== INIT ==========
+renderAll();
+updateDate();
+</script>
+</body>
+</html>
