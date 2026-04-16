@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FarmKit — Farm Management System">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>FarmKit — Farm Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar">
+  <div class="slogo">
+    <span class="lt">🌾 FarmKit</span>
+    <span class="ls" data-i18n="appSubtitle">Manajemen Pertanian</span>
+  </div>
+
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="id" onclick="App.setLang('id')">🇮🇩 ID</button>
+    <button class="lang-btn" data-lang="en" onclick="App.setLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn" data-lang="ja" onclick="App.setLang('ja')">🇯🇵 日本語</button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navMain">Utama</div>
+    <button class="ni active" onclick="App.go('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span data-i18n="navDashboard">Dashboard</span>
+    </button>
+    <button class="ni" onclick="App.go('cuaca',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+      <span data-i18n="navWeather">Cuaca & Lahan</span>
+    </button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navHR">SDM</div>
+    <button class="ni" onclick="App.go('pekerja',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span data-i18n="navWorkers">Pekerja</span>
+    </button>
+    <button class="ni" onclick="App.go('absensi',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+      <span data-i18n="navAttendance">Absensi Harian</span>
+    </button>
+    <button class="ni" onclick="App.go('tugas',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span data-i18n="navTasks">Manajemen Tugas</span>
+    </button>
+    <button class="ni" onclick="App.go('gaji',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span data-i18n="navPayroll">Penggajian</span>
+    </button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navFarming">Pertanian</div>
+    <button class="ni" onclick="App.go('panen',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><path d="M8 12a4 4 0 0 0 8 0"/><path d="M12 2v4"/><path d="M12 6c0 0-4 2-4 6"/><path d="M12 6c0 0 4 2 4 6"/></svg>
+      <span data-i18n="navHarvest">Hasil Panen</span>
+    </button>
+    <button class="ni" onclick="App.go('kalender',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span data-i18n="navCalendar">Kalender Tanam</span>
+    </button>
+    <button class="ni" onclick="App.go('inventaris',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span data-i18n="navInventory">Inventaris</span>
+    </button>
+  </div>
+
+  <div class="ssec">
+    <div class="ssl" data-i18n="navFinanceSection">Keuangan</div>
+    <button class="ni" onclick="App.go('keuangan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span data-i18n="navFinance">Keuangan</span>
+    </button>
+    <button class="ni" onclick="App.go('laporan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span data-i18n="navReports">Laporan</span>
+    </button>
+  </div>
+
+  <div class="sfooter">
+    <div class="uinfo">
+      <div class="uav">SZ</div>
+      <div><div class="uname">Suzuki-san</div><div class="urole" data-i18n="userRole">Farm Owner</div></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <div class="topbar">
+    <div class="ptitle" id="ptitle">Dashboard</div>
+    <div class="tbr">
+      <span class="bdate" id="curDate"></span>
+      <button class="btn btnp btnsm" id="tbBtn" onclick="App.topBtn()" data-i18n="btnAddData">+ Tambah Data</button>
+    </div>
+  </div>
+
+  <div class="pc">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="sgrid">
+        <div class="sc"><div class="sico" style="background:#e8f5e9">👷</div><div class="slabel" data-i18n="statPresent">Hadir Hari Ini</div><div class="sval" id="dashPresent">—</div><div class="schg" data-i18n="statPresentChg">↑ dari 10 kemarin</div></div>
+        <div class="sc"><div class="sico" style="background:#fff8e1">🌾</div><div class="slabel" data-i18n="statHarvestWeek">Panen Minggu Ini</div><div class="sval" id="dashHarvest">—<span style="font-size:14px;color:var(--t3);font-weight:400"> kg</span></div><div class="schg" data-i18n="statHarvestChg">↑ 12% dari minggu lalu</div></div>
+        <div class="sc"><div class="sico" style="background:#e3f2fd">📋</div><div class="slabel" data-i18n="statTaskPending">Tugas Pending</div><div class="sval" id="dashPending">—</div><div class="schg dn" data-i18n="statTaskChg">3 mendekati deadline</div></div>
+        <div class="sc"><div class="sico" style="background:#e8f5e9">💴</div><div class="slabel" data-i18n="statRevenue">Pendapatan Bulan Ini</div><div class="sval" id="dashRevenue" style="font-size:19px">—</div><div class="schg" data-i18n="statRevenueChg">↑ 8% dari bulan lalu</div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ctitle" data-i18n="statHarvestChart">Hasil Panen 7 Hari Terakhir (kg)</div><div class="bchart" id="harvestChart"></div></div>
+        <div class="card"><div class="ctitle" data-i18n="statRecentAct">Aktivitas Terkini</div><div id="recentAct"></div></div>
+      </div>
+      <div class="g12">
+        <div>
+          <div class="wcard" style="margin-bottom:14px;">
+            <div style="font-size:11px;opacity:.7;margin-bottom:4px" data-i18n="weatherDashLabel">🌤️ Cuaca Hari Ini · Niigata, Jepang</div>
+            <div class="wtemp">22°C</div>
+            <div class="wcity" data-i18n="weatherDesc">Berawan Sebagian · Kelembaban 68%</div>
+            <div class="wgrid">
+              <div class="witem" data-i18n="weatherWind">💨 Angin: 12 km/h</div>
+              <div class="witem" data-i18n="weatherRain">🌧️ Hujan: 10%</div>
+              <div class="witem" data-i18n="weatherMin">🌡️ Min: 16°C</div>
+              <div class="witem" data-i18n="weatherUV">☀️ UV: Rendah</div>
+            </div>
+          </div>
+          <div class="card"><div class="ctitle" data-i18n="statNextHarvest">Jadwal Panen Berikutnya</div><div id="dashCrops"></div></div>
+        </div>
+        <div class="card"><div class="ctitle" data-i18n="statInventoryStatus">Status Inventaris</div><div id="dashInv"></div></div>
+      </div>
+    </div>
+
+    <!-- CUACA -->
+    <div class="page" id="page-cuaca">
+      <div class="g3">
+        <div class="card" style="text-align:center"><div style="font-size:34px;margin-bottom:8px">☁️</div><div style="font-size:26px;font-weight:800">22°C</div><div style="font-size:12px;color:var(--t3);margin-top:3px" data-i18n="weatherTodayLabel">Hari ini · Berawan</div></div>
+        <div class="card" style="text-align:center"><div style="font-size:34px;margin-bottom:8px">🌦️</div><div style="font-size:26px;font-weight:800">19°C</div><div style="font-size:12px;color:var(--t3);margin-top:3px" data-i18n="weatherTmrwLabel">Besok · Gerimis Ringan</div></div>
+        <div class="card" style="text-align:center"><div style="font-size:34px;margin-bottom:8px">☀️</div><div style="font-size:26px;font-weight:800">25°C</div><div style="font-size:12px;color:var(--t3);margin-top:3px" data-i18n="weatherAfterLabel">Lusa · Cerah</div></div>
+      </div>
+      <div class="g3">
+        <div class="lcard">
+          <div class="lname" data-i18n="field1Name">🟩 Lahan A — Kubis & Wortel</div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldSoilTemp">Suhu Tanah</span><strong>18°C</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldHumidity">Kelembaban</span><strong>75%</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldPH">pH Tanah</span><strong>6.2</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldIrrigation">Irigasi</span><span class="badge bg" data-i18n="stActive">Aktif</span></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldStatus">Status</span><span class="badge bg" data-i18n="stOptimal">Optimal</span></div>
+        </div>
+        <div class="lcard">
+          <div class="lname" data-i18n="field2Name">🟨 Lahan B — Tomat</div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldSoilTemp">Suhu Tanah</span><strong>20°C</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldHumidity">Kelembaban</span><strong>60%</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldPH">pH Tanah</span><strong>6.8</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldIrrigation">Irigasi</span><span class="badge bo" data-i18n="stScheduled">Terjadwal</span></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldStatus">Status</span><span class="badge bo" data-i18n="stNeedsFertilizer">Perlu Pupuk</span></div>
+        </div>
+        <div class="lcard">
+          <div class="lname" data-i18n="field3Name">🟦 Lahan C — Padi</div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldSoilTemp">Suhu Tanah</span><strong>17°C</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldHumidity">Kelembaban</span><strong>82%</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldPH">pH Tanah</span><strong>5.8</strong></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldIrrigation">Irigasi</span><span class="badge bg" data-i18n="stActive">Aktif</span></div>
+          <div class="sumline"><span style="color:var(--t3)" data-i18n="fieldStatus">Status</span><span class="badge bg" data-i18n="stGood">Baik</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle" data-i18n="fieldRecTitle">Rekomendasi Tindakan Hari Ini</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;background:var(--au100);border-radius:8px;border-left:3px solid var(--au500)">
+            <span style="font-size:18px">⚠️</span>
+            <div><div style="font-size:13px;font-weight:700;color:var(--au600)" data-i18n="rec1Title">Pemupukan Lahan B Mendesak</div><div style="font-size:12px;color:var(--cr700);margin-top:2px" data-i18n="rec1Desc">Kelembaban tanah di bawah optimal, kadar nitrogen rendah. Rekomen pupuk NPK 15kg.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;background:var(--g50);border-radius:8px;border-left:3px solid var(--g600)">
+            <span style="font-size:18px">✅</span>
+            <div><div style="font-size:13px;font-weight:700;color:var(--g800)" data-i18n="rec2Title">Kondisi Lahan A & C Baik</div><div style="font-size:12px;color:var(--t2);margin-top:2px" data-i18n="rec2Desc">Tidak ada tindakan khusus. Lanjutkan irigasi rutin dan monitoring harian.</div></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;background:#fde8e8;border-radius:8px;border-left:3px solid #e74c3c">
+            <span style="font-size:18px">🌧️</span>
+            <div><div style="font-size:13px;font-weight:700;color:#c0392b" data-i18n="rec3Title">Gerimis Besok — Tunda Pestisida</div><div style="font-size:12px;color:var(--cr700);margin-top:2px" data-i18n="rec3Desc">Penyemprotan pestisida sebaiknya ditunda hingga Rabu saat cuaca cerah kembali.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PEKERJA -->
+    <div class="page" id="page-pekerja">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="wrkTotal">Total Pekerja</div><div class="sval" id="wrkTotalVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="wrkActive">Status Aktif</div><div class="sval" style="color:var(--g700)" id="wrkActiveVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="wrkLeave">Cuti / Tidak Aktif</div><div class="sval" style="color:#e67e22" id="wrkLeaveVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="wrkMonthlySalary">Total Gaji/Bulan</div><div class="sval" style="font-size:18px" id="wrkSalaryVal">—</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="wrkList">Daftar Pekerja</div><button class="btn btnp btnsm" onclick="App.sm('mWorker')" data-i18n="btnAddWorker">+ Tambah Pekerja</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thName">Nama</th><th data-i18n="thPosition">Posisi</th><th data-i18n="thPhone">No. HP</th>
+          <th data-i18n="thJoinDate">Bergabung</th><th data-i18n="thDailySalary">Gaji/Hari</th>
+          <th data-i18n="thStatus">Status</th><th data-i18n="thAction">Aksi</th>
+        </tr></thead><tbody id="tWorker"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ABSENSI -->
+    <div class="page" id="page-absensi">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="attPresent">Hadir</div><div class="sval" style="color:var(--g700)" id="attPresentVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="attAbsent">Tidak Hadir</div><div class="sval" style="color:#c0392b" id="attAbsentVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="attSickOff">Izin / Sakit</div><div class="sval" style="color:#e67e22" id="attSickVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="attTotalHours">Total Jam Kerja</div><div class="sval" style="font-size:20px" id="attHoursVal">—</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="attTitle">Absensi Hari Ini</div><button class="btn btnp btnsm" onclick="App.sm('mAbsen')" data-i18n="btnAddAttendance">+ Input Absensi</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thWorkerName">Nama Pekerja</th><th data-i18n="thCheckIn">Jam Masuk</th><th data-i18n="thCheckOut">Jam Keluar</th>
+          <th data-i18n="thTotalHours">Total Jam</th><th data-i18n="thStatus">Status</th><th data-i18n="thRemark">Keterangan</th>
+        </tr></thead><tbody id="tAbsen"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TUGAS -->
+    <div class="page" id="page-tugas">
+      <div style="display:flex;gap:9px;align-items:center;margin-bottom:14px">
+        <button class="btn btnp btnsm" onclick="App.sm('mTask')" data-i18n="btnAddTask">+ Buat Tugas</button>
+        <select id="filterWorker" style="width:auto;padding:5px 10px;font-size:12px" onchange="Render.rTasks()">
+          <option value="" data-i18n="filterAllWorkers">Semua Pekerja</option>
+        </select>
+        <select id="filterPriority" style="width:auto;padding:5px 10px;font-size:12px" onchange="Render.rTasks()">
+          <option value="" data-i18n="filterAllPriority">Semua Prioritas</option>
+          <option value="prHigh" data-i18n="prHigh">Tinggi</option>
+          <option value="prMed" data-i18n="prMed">Sedang</option>
+          <option value="prLow" data-i18n="prLow">Rendah</option>
+        </select>
+      </div>
+      <div class="kboard">
+        <div class="kcol"><div class="kctitle"><span data-i18n="kanTodo">📋 Belum Dimulai</span> <span class="badge bgy" id="cntTodo">0</span></div><div id="ktodo"></div></div>
+        <div class="kcol"><div class="kctitle"><span data-i18n="kanDoing">⚡ Sedang Berjalan</span> <span class="badge bb" id="cntDoing">0</span></div><div id="kdoing"></div></div>
+        <div class="kcol"><div class="kctitle"><span data-i18n="kanDone">✅ Selesai</span> <span class="badge bg" id="cntDone">0</span></div><div id="kdone"></div></div>
+      </div>
+    </div>
+
+    <!-- GAJI -->
+    <div class="page" id="page-gaji">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="payTotal">Total Gaji Juni</div><div class="sval" style="font-size:19px" id="payTotalVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="payPaid">Sudah Dibayar</div><div class="sval" style="font-size:19px;color:var(--g700)" id="payPaidVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="payUnpaid">Belum Dibayar</div><div class="sval" style="font-size:19px;color:#c0392b" id="payUnpaidVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="payActive">Pekerja Aktif</div><div class="sval" id="payActiveVal">—</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="payTitle">Rekap Gaji — Juni 2025</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btns btnsm" onclick="App.toast(I18n.t('toastPDF'))" data-i18n="btnPrintPDF">Cetak PDF</button>
+            <button class="btn btnp btnsm" onclick="App.processPayroll()" data-i18n="btnProcessPayroll">Proses Gaji</button>
+          </div>
+        </div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thName">Nama</th><th data-i18n="thWorkDays">Hari Kerja</th><th data-i18n="thOvertime">Lembur (jam)</th>
+          <th data-i18n="thBaseSalary">Gaji Pokok</th><th data-i18n="thOvertimePay">Uang Lembur</th>
+          <th data-i18n="thTotal">Total</th><th data-i18n="thStatus">Status</th><th data-i18n="thAction">Aksi</th>
+        </tr></thead><tbody id="tGaji"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- PANEN -->
+    <div class="page" id="page-panen">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="hvToday">Panen Hari Ini</div><div class="sval" id="hvTodayVal">—<span style="font-size:13px;font-weight:400;color:var(--t3)"> kg</span></div></div>
+        <div class="sc"><div class="slabel" data-i18n="hvWeek">Panen Minggu Ini</div><div class="sval" id="hvWeekVal">—<span style="font-size:13px;font-weight:400;color:var(--t3)"> kg</span></div></div>
+        <div class="sc"><div class="slabel" data-i18n="hvMonth">Panen Bulan Ini</div><div class="sval" id="hvMonthVal">—<span style="font-size:13px;font-weight:400;color:var(--t3)"> ton</span></div></div>
+        <div class="sc"><div class="slabel" data-i18n="hvValue">Nilai Panen</div><div class="sval" style="font-size:19px" id="hvValueVal">—</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="hvLog">Log Hasil Panen</div><button class="btn btnp btnsm" onclick="App.sm('mHarvest')" data-i18n="btnAddHarvest">+ Catat Panen</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thDate">Tanggal</th><th data-i18n="thCommodity">Komoditas</th><th data-i18n="thField">Lahan</th>
+          <th data-i18n="thWeight">Berat (kg)</th><th data-i18n="thQuality">Kualitas</th>
+          <th data-i18n="thDestination">Tujuan</th><th data-i18n="thValue">Nilai (¥)</th>
+        </tr></thead><tbody id="tHarvest"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- KALENDER -->
+    <div class="page" id="page-kalender">
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle" data-i18n="calTitle">Kalender Tanam — Juni 2025</div>
+          <div class="cg">
+            <div class="cdh" data-i18n="dayMin">Min</div><div class="cdh" data-i18n="daySen">Sen</div>
+            <div class="cdh" data-i18n="daySel">Sel</div><div class="cdh" data-i18n="dayRab">Rab</div>
+            <div class="cdh" data-i18n="dayKam">Kam</div><div class="cdh" data-i18n="dayJum">Jum</div>
+            <div class="cdh" data-i18n="daySab">Sab</div>
+          </div>
+          <div class="cg" id="calGrid" style="margin-top:3px"></div>
+          <div style="margin-top:14px;display:flex;gap:14px;font-size:11px;color:var(--t3)">
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:var(--g800)"></div><span data-i18n="calToday">Hari Ini</span></div>
+            <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:10px;border-radius:50%;background:var(--au500)"></div><span data-i18n="calScheduled">Ada Jadwal</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px"><div class="ctitle" data-i18n="calSchedule">Jadwal Tanam Aktif</div><div id="cropSched"></div></div>
+          <div class="card">
+            <div class="ctitle" data-i18n="calAdd">+ Tambah Jadwal Tanam</div>
+            <div class="fg"><label data-i18n="calCommodity">Komoditas</label>
+              <select id="calCropSelect">
+                <option value="cropRice" data-i18n="cropRice">Padi</option>
+                <option value="cropTomato" data-i18n="cropTomato">Tomat</option>
+                <option value="cropCabbage" data-i18n="cropCabbage">Kubis</option>
+                <option value="cropCarrot" data-i18n="cropCarrot">Wortel</option>
+                <option value="cropOnion" data-i18n="cropOnion">Bawang</option>
+              </select>
+            </div>
+            <div class="fg"><label data-i18n="calPlantDate">Tanggal Tanam</label><input type="date" id="calPlantDate"></div>
+            <div class="fg"><label data-i18n="calHarvestEst">Estimasi Panen</label><input type="date" id="calHarvestDate"></div>
+            <div class="fg"><label data-i18n="calField">Lahan</label>
+              <select id="calFieldSelect"><option>Lahan A</option><option>Lahan B</option><option>Lahan C</option></select>
+            </div>
+            <button class="btn btnp" style="width:100%" onclick="App.toast(I18n.t('toastSaved'))" data-i18n="btnSavePlanting">Simpan Jadwal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTARIS -->
+    <div class="page" id="page-inventaris">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="invTotal">Total Item</div><div class="sval" id="invTotalVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="invSafe">Stok Aman</div><div class="sval" style="color:var(--g700)" id="invSafeVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="invLow">Stok Rendah</div><div class="sval" style="color:#e67e22" id="invLowVal">—</div></div>
+        <div class="sc"><div class="slabel" data-i18n="invEmpty">Stok Habis</div><div class="sval" style="color:#c0392b" id="invEmptyVal">—</div></div>
+      </div>
+      <div class="card">
+        <div class="sh"><div class="stit" data-i18n="invList">Daftar Stok & Inventaris</div><button class="btn btnp btnsm" onclick="App.sm('mInv')" data-i18n="btnAddStock">+ Tambah Stok</button></div>
+        <div class="tw"><table><thead><tr>
+          <th data-i18n="thItem">Item</th><th data-i18n="thCategory">Kategori</th><th data-i18n="thStock">Stok</th>
+          <th data-i18n="thUnit">Satuan</th><th data-i18n="thMinStock">Min. Stok</th>
+          <th data-i18n="thStatus">Status</th><th data-i18n="thLastUpdate">Update Terakhir</th>
+        </tr></thead><tbody id="tInv"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- KEUANGAN -->
+    <div class="page" id="page-keuangan">
+      <div class="sgrid" style="margin-bottom:18px">
+        <div class="sc"><div class="slabel" data-i18n="finRevenue">Pendapatan Bulan Ini</div><div class="sval" style="font-size:18px;color:var(--g700)" id="finRevenueVal">—</div><div class="schg">↑ 8%</div></div>
+        <div class="sc"><div class="slabel" data-i18n="finExpense">Pengeluaran Bulan Ini</div><div class="sval" style="font-size:18px;color:#c0392b" id="finExpenseVal">—</div><div class="schg dn">↑ 5%</div></div>
+        <div class="sc"><div class="slabel" data-i18n="finProfit">Keuntungan Bersih</div><div class="sval" style="font-size:18px;color:var(--g700)" id="finProfitVal">—</div><div class="schg">↑ 14%</div></div>
+        <div class="sc"><div class="slabel" data-i18n="finMargin">Margin Keuntungan</div><div class="sval" id="finMarginVal">—</div><div class="schg" data-i18n="finMarginChg">Bulan lalu: 30%</div></div>
+      </div>
+      <div class="g21">
+        <div class="card">
+          <div class="sh"><div class="stit" data-i18n="finTxTitle">Transaksi Terbaru</div><button class="btn btnp btnsm" onclick="App.sm('mFin')" data-i18n="btnAddTransaction">+ Tambah</button></div>
+          <div id="finList"></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px"><div class="ctitle" data-i18n="finExpBreak">Pengeluaran per Kategori</div><div id="expBreak"></div></div>
+          <div class="card">
+            <div class="ctitle" data-i18n="finSummary">Ringkasan Bulan Ini</div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finRice">Penjualan Padi</span><strong style="color:var(--g700)">+¥192K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finVeg">Penjualan Sayuran</span><strong style="color:var(--g700)">+¥288K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finWage">Gaji Pekerja</span><strong style="color:#c0392b">-¥168K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finFertilizer">Pupuk & Pestisida</span><strong style="color:#c0392b">-¥86K</strong></div>
+            <div class="sumline"><span style="color:var(--t3)" data-i18n="finOther">Lain-lain</span><strong style="color:#c0392b">-¥58K</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAPORAN -->
+    <div class="page" id="page-laporan">
+      <div class="g2">
+        <div class="card">
+          <div class="ctitle" data-i18n="rptTitle">Laporan Tersedia</div>
+          <div style="display:flex;flex-direction:column;gap:9px" id="reportList"></div>
+        </div>
+        <div class="card">
+          <div class="ctitle" data-i18n="rptPerfChart">Performa Keuangan 6 Bulan (¥K)</div>
+          <div id="perfChart"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pc -->
+</div><!-- /main -->
+
+<!-- ===== MODALS ===== -->
+<div class="moverlay" id="mWorker" style="display:none" onclick="App.hm('mWorker',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mWorkerTitle">👷 Tambah Pekerja Baru</div>
+    <div class="fg"><label data-i18n="fFullName">Nama Lengkap</label><input id="wName" type="text" data-i18n-placeholder="phName"></div>
+    <div class="fg"><label data-i18n="fPosition">Posisi</label>
+      <select id="wPos"><option value="posGeneral" data-i18n="posGeneral">Petani Umum</option><option value="posSupervisor" data-i18n="posSupervisor">Supervisor Lahan</option><option value="posMachine" data-i18n="posMachine">Operator Mesin</option><option value="posWarehouse" data-i18n="posWarehouse">Staf Gudang</option><option value="posDriver" data-i18n="posDriver">Driver / Pengiriman</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fPhone">Nomor HP</label><input id="wPhone" type="text" data-i18n-placeholder="phPhone"></div>
+    <div class="fg"><label data-i18n="fJoinDate">Tanggal Bergabung</label><input id="wJoin" type="date"></div>
+    <div class="fg"><label data-i18n="fDailySalary">Gaji per Hari (¥)</label><input id="wWage" type="number" placeholder="0" min="0"></div>
+    <div class="fg"><label data-i18n="fStatusF">Status</label>
+      <select id="wStatus"><option value="stActive" data-i18n="stActive">Aktif</option><option value="optTrial" data-i18n="optTrial">Percobaan</option><option value="stLeave" data-i18n="stLeave">Cuti</option></select>
+    </div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="App.hm('mWorker')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="App.saveWorker()" data-i18n="btnSaveWorker">Simpan Pekerja</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mAbsen" style="display:none" onclick="App.hm('mAbsen',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mAbsenTitle">📅 Input Absensi</div>
+    <div class="fg"><label data-i18n="fWorker">Pilih Pekerja</label><select id="aWorker"></select></div>
+    <div class="fg"><label data-i18n="fDateF">Tanggal</label><input id="aDate" type="date"></div>
+    <div class="fg"><label data-i18n="fStatusAtt">Status</label>
+      <select id="aStatus"><option value="stPresent" data-i18n="stPresent">Hadir</option><option value="stAbsent" data-i18n="stAbsent">Tidak Hadir</option><option value="stPermission" data-i18n="stPermission">Izin</option><option value="stSick" data-i18n="stSick">Sakit</option><option value="stOvertime" data-i18n="stOvertime">Lembur</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fCheckIn">Jam Masuk</label><input id="aIn" type="time" value="07:00"></div>
+    <div class="fg"><label data-i18n="fCheckOut">Jam Keluar</label><input id="aOut" type="time" value="16:00"></div>
+    <div class="fg"><label data-i18n="fRemarks">Keterangan</label><textarea id="aRemark" rows="2" data-i18n-placeholder="phOptional"></textarea></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="App.hm('mAbsen')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="App.saveAttendance()" data-i18n="btnSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mTask" style="display:none" onclick="App.hm('mTask',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mTaskTitle">📋 Buat Tugas Baru</div>
+    <div class="fg"><label data-i18n="fTaskTitle">Judul Tugas</label><input id="tkTitle" type="text" data-i18n-placeholder="phTaskTitle"></div>
+    <div class="fg"><label data-i18n="fAssignTo">Assign ke</label><select id="tkAssignee"></select></div>
+    <div class="fg"><label data-i18n="fPriority">Prioritas</label>
+      <select id="tkPriority"><option value="prLow" data-i18n="prLow">Rendah</option><option value="prMed" data-i18n="prMed">Sedang</option><option value="prHigh" data-i18n="prHigh">Tinggi</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fDeadline">Deadline</label><input id="tkDeadline" type="date"></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="App.hm('mTask')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="App.saveTask()" data-i18n="btnCreateTask">Buat Tugas</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mHarvest" style="display:none" onclick="App.hm('mHarvest',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mHarvestTitle">🌾 Catat Hasil Panen</div>
+    <div class="fg"><label data-i18n="fHarvestDate">Tanggal Panen</label><input id="hDate" type="date"></div>
+    <div class="fg"><label data-i18n="fCommodity">Komoditas</label>
+      <select id="hCrop"><option>🍅 Tomat</option><option>🥬 Kubis</option><option>🌾 Padi</option><option>🥕 Wortel</option><option>🧅 Bawang</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fField">Lahan</label>
+      <select id="hField"><option>Lahan A</option><option>Lahan B</option><option>Lahan C</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fWeight">Berat Total (kg)</label><input id="hWeight" type="number" placeholder="0" min="0"></div>
+    <div class="fg"><label data-i18n="fQuality">Kualitas / Grade</label>
+      <select id="hQuality"><option>Grade A</option><option>Grade B</option><option>Grade C</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fDestination">Tujuan Pengiriman</label>
+      <select id="hDest"><option value="destExport" data-i18n="destExport">Ekspor</option><option value="destLocal" data-i18n="destLocal">Pasar Lokal</option><option value="destCoop" data-i18n="destCoop">Koperasi</option><option value="destDirect" data-i18n="destDirect">Dijual Langsung</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fPricePerKg">Harga Jual/kg (¥)</label><input id="hPrice" type="number" placeholder="0" min="0"></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="App.hm('mHarvest')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="App.saveHarvest()" data-i18n="btnSaveHarvest">Simpan Panen</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mInv" style="display:none" onclick="App.hm('mInv',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mInvTitle">📦 Tambah / Update Stok</div>
+    <div class="fg"><label data-i18n="fItemName">Nama Item</label><input id="invName" type="text" data-i18n-placeholder="phItemName"></div>
+    <div class="fg"><label data-i18n="fCategory">Kategori</label>
+      <select id="invCat"><option value="catFertilizer" data-i18n="catFertilizer">Pupuk</option><option value="catPesticide" data-i18n="catPesticide">Pestisida</option><option value="catTool" data-i18n="catTool">Alat & Mesin</option><option value="catSeed" data-i18n="catSeed">Bibit</option><option value="catFuel" data-i18n="catFuel">BBM</option><option value="catOther" data-i18n="catOther">Lainnya</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fStockQty">Jumlah Stok</label><input id="invStock" type="number" placeholder="0" min="0"></div>
+    <div class="fg"><label data-i18n="fUnit">Satuan</label><input id="invUnit" type="text" data-i18n-placeholder="phUnit"></div>
+    <div class="fg"><label data-i18n="fMinStock">Stok Minimum</label><input id="invMin" type="number" placeholder="0" min="0"></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="App.hm('mInv')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="App.saveInventory()" data-i18n="btnSaveStock">Simpan Stok</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mFin" style="display:none" onclick="App.hm('mFin',event)">
+  <div class="modal">
+    <div class="mtitle" data-i18n="mFinTitle">💴 Tambah Transaksi</div>
+    <div class="fg"><label data-i18n="fTxType">Tipe Transaksi</label>
+      <select id="finType"><option value="income" data-i18n="txIncome">Pemasukan</option><option value="expense" data-i18n="txExpense">Pengeluaran</option></select>
+    </div>
+    <div class="fg"><label data-i18n="fTxCategory">Kategori</label><input id="finCat" type="text" data-i18n-placeholder="phTxDesc"></div>
+    <div class="fg"><label data-i18n="fAmount">Jumlah (¥)</label><input id="finAmt" type="number" placeholder="0" min="0"></div>
+    <div class="fg"><label data-i18n="fDateF">Tanggal</label><input id="finDate" type="date"></div>
+    <div class="mfooter">
+      <button class="btn btns" onclick="App.hm('mFin')" data-i18n="btnCancel">Batal</button>
+      <button class="btn btnp" onclick="App.saveFinance()" data-i18n="btnSaveTransaction">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- JS modules — order matters -->
+<script src="/js/i18n.js"></script>
+<script src="/js/render.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
